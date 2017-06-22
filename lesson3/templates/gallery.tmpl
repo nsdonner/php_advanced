@@ -1,0 +1,18 @@
+<html>
+  <head>
+        <link rel="stylesheet" href="style.css">
+        <title>lesoon3</title>
+  </head>
+  <body>
+
+         <ul>
+               {% for images in images %}
+                 <li>
+                 <a href='/index.php?image={{images.initial}}'> <img src='{{images.small | escape}}' alt='' ></a></li>
+               {% endfor %}
+         </ul>
+
+
+
+
+  </body>
