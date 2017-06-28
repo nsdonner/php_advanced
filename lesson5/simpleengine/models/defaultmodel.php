@@ -10,46 +10,50 @@
 namespace simpleengine\models;
 
 
+class DefaultModel
+{
 
-
-
-
-class DefaultModel{
-
-    
-
-    public function testMethod(){
-        $username = 'Гость';
-        session_start();
+    private function query($sql)
+    {
         try {
-            $dbh = new \PDO('mysql:dbname=lesson5;charset=UTF8;host=localhost', 'root', '');
-        }
-
-        catch (\PDOException $e)
-        {
+            $dbh = new \PDO(DSN, DB_USER, DB_PASS);
+        } catch (\PDOException $e) {
             echo "Error: Could not connect. " . $e->getMessage();
         }
 
         // установка error режима
         $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
-        if (isset($_POST['login'])){
-            $login = $_POST['login'];
-            $password = $_POST['pass'];
+        try {
 
-            try {
-                $sql = "SELECT COUNT(*) FROM `users` WHERE login= '".$login."' AND password = '".$password."'";
-                $sth = $dbh->prepare($sql);
-                $sth->execute();
+            $sth = $dbh->prepare($sql);
+            $sth->execute();
 
-                while ($result = $sth->fetch()) {
-                    $data[] = $result[0];
-                }
-
-            } catch (\PDOException $e) {
+            while ($result = $sth->fetch()) {
+                $data[] = $result[0];
             }
 
-            if ($data[0]>0){
+        } catch (\PDOException $e) {
+        }
+
+        return $data;
+
+    }
+
+    public function testMethod()
+    {
+        $username = 'Гость';
+        session_start();
+
+        if (isset($_POST['login'])) {
+            $login = $_POST['login'];
+            $password = $_POST['pass'];
+            $sql = "SELECT COUNT(*) FROM `users` WHERE login= '" . $login . "' AND password = '" . $password . "'";
+
+            $data = $this->query($sql);
+
+
+            if ($data[0] > 0) {
                 $_SESSION['username'] = $_POST['login'];
             } else {
                 $username = 'хорошая попытка, но ты ввел не правильные данные.';
@@ -57,28 +61,26 @@ class DefaultModel{
 
         }
 
-        if (isset($_SESSION['username'])){
+        if (isset($_SESSION['username'])) {
             $username = $_SESSION['username'];
-            }
+        }
 
-        return "Привет, ". $username;
+        return "Привет, " . $username;
     }
 
 
-
-    public function menu(){
+    public function menu()
+    {
 
         session_start();
 
-        if (isset($_SESSION['username'])){
-            $menuList=['Кабинет'=>'/hello/hello', 'Выйти'=>'/hello/bye'];
+        if (isset($_SESSION['username'])) {
+            $menuList = ['Кабинет' => '/hello/hello', 'Выйти' => '/hello/bye'];
 
-        } else $menuList=['Войти'=>'/hello/login'];
+        } else $menuList = ['Войти' => '/hello/login'];
 
         return $menuList;
     }
-
-
 
 
 }
