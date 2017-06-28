@@ -15,7 +15,7 @@ if (isset($_POST['more'])) {
 
     $mult = $_POST['more'];
     try {
-        $sql = "SELECT good_name FROM `goods` LIMIT 0,". 25*$mult;
+        $sql = "SELECT good_name FROM `goods` LIMIT 0,". 250000*$mult;
         $sth = $dbh->prepare($sql);
         $sth->execute();
 
@@ -26,9 +26,9 @@ if (isset($_POST['more'])) {
     } catch (PDOException $e) {
     }
 
-    foreach ($data as $line){
+    foreach ($data as $key => $line){
 
-        echo '<li>'. $line .'</li>';
+        echo '<li>'. $key.' '.$line .'</li>';
     }
 
 
