@@ -12,10 +12,10 @@ $configuration["DIR"]["VIEWS"] = $_SERVER["DOCUMENT_ROOT"]."/../simpleengine/vie
 
 // Настройки БД
 
-const DB_HOST = 'localhost';
+const DB_HOST = '172.29.0.250';
 const DB_USER = 'root';
 const DB_PASS = '';
-const DB_NAME = 'lesson5';
+const DB_NAME = 'lesson6';
 const DB_CHARSET = 'utf8';
 const DSN = 'mysql:dbname='.DB_NAME.';charset='.DB_CHARSET.';host='.DB_HOST.'';
 

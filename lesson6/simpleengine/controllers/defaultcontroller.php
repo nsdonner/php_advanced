@@ -18,7 +18,7 @@ class DefaultController extends AbstractController
         $model = new DefaultModel();
 
         echo $this->render("index", [
-            "hello" => "geekbrains",
+            "hello" => $model->catalog(),
             "info" => $model->testMethod(),
             "menuList" => $model->menu(),
 

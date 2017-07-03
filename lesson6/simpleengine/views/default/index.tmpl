@@ -1,5 +1,15 @@
 <h1>Это наш новый сайт</h1>
-<p>{{ hello }}</p>
+
+
+
+
+<ul class="goods">
+    {% for value in hello%}
+    <li>товар {{value.name}} цена {{value.price}} руб. <img src="{{value.photo}}" alt="изображение {{value.name}}"> <button name="{{value.name}}">Купить</button></li>
+    {%endfor%}
+</ul>
+
+
 
 <h2>{{ info }}</h2>
 

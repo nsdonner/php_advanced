@@ -20,24 +20,17 @@ class DefaultModel
         } catch (\PDOException $e) {
             echo "Error: Could not connect. " . $e->getMessage();
         }
-
         // установка error режима
         $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-
         try {
-
             $sth = $dbh->prepare($sql);
             $sth->execute();
-
             while ($result = $sth->fetch()) {
                 $data[] = $result[0];
             }
-
         } catch (\PDOException $e) {
         }
-
         return $data;
-
     }
 
     public function testMethod()
@@ -69,55 +62,63 @@ class DefaultModel
     }
 
 
-    public function menu()
+    public function catalog()
     {
-
-
-        if (!isset($_SESSION)){
-
-            session_start();
+        try {
+            $dbh = new \PDO(DSN, DB_USER, DB_PASS);
+        } catch (\PDOException $e) {
+            echo "Error: Could not connect. " . $e->getMessage();
         }
 
+        $dbh->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
+        try {
+            // формируем SELECT запрос
+            // в результате каждая строка таблицы будет объектом
+            $sql = "SELECT price AS price, name AS name, photo AS photo FROM goods WHERE active = 1";
+            $sth = $dbh->query($sql);
+            while ($row = $sth->fetchObject()) {
+                $data[] = $row;
+            }
+        } catch (\PDOException $e) {
+        }
+        // закрываем соединение
+        unset($dbh);
+        return $data;
+    }
 
+    public function menu()
+    {
+        if (!isset($_SESSION)) {
+            session_start();
+        }
         if (isset($_SESSION['username'])) {
             $menuList = ['Кабинет' => '/hello/hello', 'Выйти' => '/login/bye'];
-
         } else $menuList = ['Войти' => '/login/login'];
+
+
+
+
 
         return $menuList;
     }
 
-
     public function bye()
     {
-
         session_start();
         session_unset();
         session_destroy();
         header('Location:/');
         exit;
-
     }
 
-    public function hello(){
-
-
-
+    public function hello()
+    {
         session_start();
-
-        if (isset($_SESSION['username'])){
-
-
+        if (isset($_SESSION['username'])) {
             return ['username' => $_SESSION['username']];
-
-
         } else {
-
-               return ['guest' => '1'];
-
+            return ['guest' => '1'];
         }
-
     }
-
 }
