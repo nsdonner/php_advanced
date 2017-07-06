@@ -29,5 +29,12 @@ class defaultModelTest extends \PHPUnit\Framework\TestCase
         $this->assertArrayHasKey('4', $model->catalog() );
     }
 
+    public function testMenu(){
+
+        $model = new simpleengine\models\DefaultModel();
+        $this->assertArrayHasKey('Привет', $model->menu() );
+
+    }
+
 
 }

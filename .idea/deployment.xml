@@ -5,7 +5,7 @@
       <paths name="gb.local">
         <serverdata>
           <mappings>
-            <mapping deploy="/data/gb.local/docs" local="$PROJECT_DIR$/lesson6" web="/" />
+            <mapping deploy="/data/gb.local/docs" local="$PROJECT_DIR$/lesson7" web="/" />
           </mappings>
         </serverdata>
       </paths>
