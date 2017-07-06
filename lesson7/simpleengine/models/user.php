@@ -18,23 +18,65 @@ class User implements DbModelInterface
     private $middlename;
     private $email;
 
-    public function __construct($id = null){
-        if((int)$id > 0){
+    public function __construct($id = null)
+    {
+        if ((int)$id > 0) {
             $this->find($id);
         }
     }
 
-    public function auth(){
+    public function bye()
+    {
+        session_start();
+        session_unset();
+        session_destroy();
+        header('Location:/');
+        exit;
+    }
+
+
+    public function userIsAuth()
+    {
+
+        session_start();
+        $username = 'Гость';
+
+        if (isset($_POST['email'])) {
+            $app = Application::instance();
+            $email = $_POST['email'];
+            $password = $_POST['pass'];
+            $sql = "SELECT * FROM users WHERE email= '" . $email . "' AND hash_pass = MD5('" . $password . "')";
+            $data = $app->db()->getArrayBySqlQuery($sql);
+
+            if (isset($data[0]['id'])) {
+                $_SESSION['email'] = $_POST['email'];
+                $username = $data[0][firstname];
+                $_SESSION['username'] = $data[0][firstname];
+            } else {
+                $username = 'хорошая попытка, но ты ввел не правильные данные.';
+            }
+        }
+
+        if (isset($_SESSION['username'])){
+            $username = $_SESSION['username'];
+        }
+
+        return "Привет, " . $username;
+
+    }
+
+    public function auth()
+    {
 
     }
 
     public function find($id)
     {
         $app = Application::instance();
-        $sql = "SELECT * FROM users WHERE id = ".(int)$id;
+        $sql = "SELECT * FROM users WHERE id = " . (int)$id;
         $result = $app->db()->getArrayBySqlQuery($sql);
 
-        if(isset($result[0])){
+        if (isset($result[0])) {
             $this->id = $result[0]["id"];
             $this->firstname = $result[0]["firstname"];
             $this->lastname = $result[0]["lastname"];
@@ -43,12 +85,15 @@ class User implements DbModelInterface
         }
     }
 
-    public function getUsersBasket(){
+    public
+    function getUsersBasket()
+    {
         $basket = new Basket($this->id);
         return $basket->getProductsArray();
     }
 
-    public function save()
+    public
+    function save()
     {
         // TODO: Implement save() method.
     }
@@ -56,7 +101,8 @@ class User implements DbModelInterface
     /**
      * @return string firstname
      */
-    public function getFirstname()
+    public
+    function getFirstname()
     {
         return $this->firstname;
     }
@@ -64,7 +110,8 @@ class User implements DbModelInterface
     /**
      * @return string lastname
      */
-    public function getLastname()
+    public
+    function getLastname()
     {
         return $this->lastname;
     }
@@ -72,7 +119,8 @@ class User implements DbModelInterface
     /**
      * @return string middlename
      */
-    public function getMiddlename()
+    public
+    function getMiddlename()
     {
         return $this->middlename;
     }
@@ -80,7 +128,8 @@ class User implements DbModelInterface
     /**
      * @return string email
      */
-    public function getEmail()
+    public
+    function getEmail()
     {
         return $this->email;
     }

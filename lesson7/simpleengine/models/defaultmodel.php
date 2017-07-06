@@ -18,4 +18,20 @@ class DefaultModel
 
         return "GeekUnivercity is awesome";
     }
+
+
+    public function menu()
+    {
+        if (!isset($_SESSION)) {
+            session_start();
+        }
+        if (isset($_SESSION['email'])) {
+            $menuList = ['Кабинет' => '/hello/hello', 'Выйти' => '/user/bye'];
+        } else $menuList = ['Войти' => '/user/login'];
+
+        return $menuList;
+    }
+
+
+
 }

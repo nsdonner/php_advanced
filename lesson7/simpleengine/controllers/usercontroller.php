@@ -14,9 +14,28 @@ class UserController extends AbstractController
 
     public function actionIndex()
     {
-        // Ëè÷íûé êàáèíåò ïîëüçîâàòåëÿ
 
-        // ñîçäàòü ıêçåìïëÿğ ìîäåëè ïîëüçîâàòåëÿ
-        // ïîëó÷èòü äàííûå
     }
+
+    public function actionLogin()
+    {
+        // TODO: Implement actionIndex() method.
+
+
+        echo $this->render("/loginpage");
+
+
+
+    }
+
+    public function actionBye()
+    {
+        // TODO: Implement actionIndex() method.
+
+        $user = new \simpleengine\models\User();
+        $user->bye();
+
+    }
+
+
 }

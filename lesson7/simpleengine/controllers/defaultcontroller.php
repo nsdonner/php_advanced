@@ -9,21 +9,25 @@
 namespace simpleengine\controllers;
 
 
-use simpleengine\models\DefaultModel;
+
+
 
 class DefaultController extends AbstractController
 {
     public function actionIndex()
     {
-        $model = new DefaultModel();
+        $model = new \simpleengine\models\DefaultModel();
+        $user = new \simpleengine\models\User();
 
         echo $this->render("index", [
             "hello" => "geekbrains",
-            "info" => $model->testMethod()
+            "info" => $model->testMethod(),
+            "username" => $user->userIsAuth(),
+            "menuList" => $model->menu(),
+
+
         ]);
     }
 
-    public function actionDefault(){
-        echo 345;
-    }
+
 }
