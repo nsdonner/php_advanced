@@ -11,6 +11,7 @@ require(__DIR__ . "/../configuration/main.config.php");
 try {
     $app = simpleengine\core\Application::instance();
     $app->setConfiguration($configuration);
+    session_start();
     $app->run();
 }
 catch (simpleengine\core\exception\ApplicationException $e){

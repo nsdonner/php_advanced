@@ -27,7 +27,7 @@ class User implements DbModelInterface
 
     public function bye()
     {
-        session_start();
+       /* session_start();*/
         session_unset();
         session_destroy();
         header('Location:/');
@@ -38,7 +38,7 @@ class User implements DbModelInterface
     public function userIsAuth()
     {
 
-        session_start();
+        /*session_start();*/
         $username = 'Гость';
 
         if (isset($_POST['email'])) {
