@@ -1,0 +1,10 @@
+<h1>Каталог товаров</h1>
+
+
+
+<ul>{% for value in catalog%}
+    <li><a href='/product/item/?product_id={{value.id}}'>{{value.product_name}}</a> Цена: {{value.product_price}} <img src="{{value.property_value}}" alt="{{value.property_value}}"></li>
+    {%endfor%}
+
+</ul>
+<a href="/">На глвную</a>

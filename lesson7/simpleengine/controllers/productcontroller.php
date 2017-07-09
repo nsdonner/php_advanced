@@ -15,12 +15,28 @@ class ProductController extends AbstractController
     // gb.local/product/index/
     public function actionIndex()
     {
-        // выводить каталог продуктов
+        // РІС‹РІРѕРґРёС‚СЊ РєР°С‚Р°Р»РѕРі РїСЂРѕРґСѓРєС‚РѕРІ
+
+        $product = new \simpleengine\models\Product();
+
+        echo $this->render("/catalog", [
+            "catalog" => $product->getCatalog('')
+
+        ]);
+
+
+
+
+
     }
 
     // gb.local/product/item/?id_product=123
     // gb.local/product/item/123/
     public function actionItem(){
-        // карточка товара
+        // РєР°СЂС‚РѕС‡РєР° С‚РѕРІР°СЂР°
+
+
+        echo $_GET['product_id'];
+
     }
 }

@@ -12,7 +12,8 @@ use \simpleengine\core\Application;
 
 class DefaultModel
 {
-    public function testMethod(){
+    public function testMethod()
+    {
         $app = Application::instance();
         $app->db()->getArrayBySqlQuery("SELECT * FROM users");
 
@@ -26,12 +27,16 @@ class DefaultModel
             session_start();
         }*/
         if (isset($_SESSION['email'])) {
-            $menuList = ['Кабинет' => '/hello/hello', 'Выйти' => '/user/bye'];
-        } else $menuList = ['Войти' => '/user/login'];
+            $menuList = [   'Каталог' => '/product/index',
+                            'Кабинет' => '/hello/hello',
+                            'Выйти' => '/user/bye'
+            ];
+        } else $menuList = ['Войти' => '/user/login',
+                            'Каталог' => '/product/index'
+            ];
 
         return $menuList;
     }
-
 
 
 }
