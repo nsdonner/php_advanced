@@ -7,8 +7,8 @@
         <a href='/product/item/?product_id={{value.id}} '>{{value.product_name}}</a> Цена: {{value.product_price}}
 
 
-        {% for valuePic in value['images'] %}
-        <img src="{{valuePic}}    " alt="{{valuePic}}">
+        {% for valuePic in value['Photo'] %}
+        <img src="{{valuePic}}" alt="{{valuePic}}">
 
         {%endfor%}
 
@@ -16,4 +16,4 @@
     {%endfor%}
 
 </ul>
-<a href="/">На глвную</a>
+<a href="/">На главную</a>

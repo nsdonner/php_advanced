@@ -34,9 +34,19 @@ class ProductController extends AbstractController
     // gb.local/product/item/123/
     public function actionItem(){
         // карточка товара
+        $id = (int)$_GET['product_id'];
+        $product = new \simpleengine\models\Product('10',$id);
 
 
-        echo $_GET['product_id'];
+
+        echo $this->render("/product", [
+
+            "product" => $product->getProduct()
+
+        ]);
+
+
+
 
     }
 }

@@ -1,0 +1,15 @@
+<h1>Карточка товара '{{product['header'][0]['product_name']}}'  из категории '{{product['header'][0]['category_name']}}'</h1>
+
+
+
+<ul>{% for key, value2 in product['list']  %}
+    <li>
+
+        Название: {{value2['product_name']}}, цена: {{value2['product_price']}}, артикул: {{value2['product_sku']}}
+
+    </li>
+    {%endfor%}
+
+</ul>
+<a href="/product">Назад</a>
+<a href="/">На главную</a>
