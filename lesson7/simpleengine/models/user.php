@@ -21,6 +21,7 @@ class User implements DbModelInterface
     {
         return $this->id;
     }
+
     private $firstname;
     private $lastname;
     private $middlename;
@@ -29,10 +30,9 @@ class User implements DbModelInterface
     public function __construct($id = null)
     {
 
-        if (isset($_SESSION['id'])){
-            $id  = $_SESSION['id'];
+        if (isset($_SESSION['id'])) {
+            $id = $this->id = (int)$_SESSION['id'];
         }
-
 
 
         if ((int)$id > 0) {
@@ -42,7 +42,7 @@ class User implements DbModelInterface
 
     public function bye()
     {
-       /* session_start();*/
+        /* session_start();*/
         session_unset();
         session_destroy();
         header('Location:/');
@@ -55,6 +55,7 @@ class User implements DbModelInterface
 
         /*session_start();*/
         $username[0] = 'Гость';
+        $username[1] = 0;
 
         if (isset($_POST['email'])) {
             $app = Application::instance();
@@ -74,7 +75,7 @@ class User implements DbModelInterface
             }
         }
 
-        if (isset($_SESSION['username'])){
+        if (isset($_SESSION['username'])) {
             $username[0] = $_SESSION['username'];
             $username[1] = 1;
         }
@@ -104,14 +105,15 @@ class User implements DbModelInterface
     }
 
 
-
-
-
-
     public
     function getUsersBasket()
     {
-        $basket = new Basket($this->id);
+        if (isset($_SESSION['id'])){
+
+            $this->id = $_SESSION['id'];
+            $basket = new Basket($this->id);
+
+        } else $basket = new Basket($this->id);
         return $basket->getProductsArray();
     }
 

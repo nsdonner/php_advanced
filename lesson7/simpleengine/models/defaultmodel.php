@@ -35,6 +35,8 @@ class DefaultModel
                             'Каталог' => '/product/index'
             ];
 
+
+
         return $menuList;
     }
 

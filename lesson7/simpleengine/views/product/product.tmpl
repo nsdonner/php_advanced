@@ -1,3 +1,32 @@
+
+{% if isAuth[1] == 1 %}
+<h3>Корзина</h3>
+<ul>
+
+    {% for value in usersItems%}
+    <li> {{ value["product_name"]}}: {{value["product_price"]}}  руб.
+
+        <form method="post" action="/hello/remove/">
+
+            <button name="remove" value="{{value['id_basket']}}">Удалить</button>
+
+        </form>
+
+
+
+    </li>
+
+
+    {%endfor%}
+</ul>
+
+
+{% endif %}
+
+
+
+
+
 <h1>Карточка товара '{{product['header'][0]['product_name']}}'  из категории '{{product['header'][0]['category_name']}}'</h1>
 
 

@@ -18,16 +18,16 @@ class DefaultController extends AbstractController
     {
         $model = new \simpleengine\models\DefaultModel();
         $user = new \simpleengine\models\User();
-
         echo $this->render("index", [
+
+            "isAuth" => $user->userIsAuth(),
+            "user" => $user->getFirstname(),
             "hello" => "geekbrains",
             "info" => $model->testMethod(),
             "username" => $user->userIsAuth(),
             "menuList" => $model->menu(),
-
+            "usersItems" => $user->getUsersBasket(),
 
         ]);
     }
-
-
 }

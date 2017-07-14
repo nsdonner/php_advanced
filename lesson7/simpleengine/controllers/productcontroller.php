@@ -18,10 +18,12 @@ class ProductController extends AbstractController
         // выводить каталог продуктов
 
         $product = new \simpleengine\models\Product();
+        $user = new \simpleengine\models\User();
 
         echo $this->render("/catalog", [
-            "catalog" => $product->getCatalog('')
-
+            "catalog" => $product->getCatalog(''),
+            "usersItems" => $user->getUsersBasket(),
+            "isAuth" => $user->userIsAuth(),
         ]);
 
 
@@ -36,12 +38,14 @@ class ProductController extends AbstractController
         // карточка товара
         $id = (int)$_GET['product_id'];
         $product = new \simpleengine\models\Product('10',$id);
-
+        $user = new \simpleengine\models\User();
 
 
         echo $this->render("/product", [
 
-            "product" => $product->getProduct()
+            "product" => $product->getProduct(),
+            "usersItems" => $user->getUsersBasket(),
+            "isAuth" => $user->userIsAuth(),
 
         ]);
     }
