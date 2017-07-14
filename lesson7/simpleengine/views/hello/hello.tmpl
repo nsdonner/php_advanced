@@ -12,6 +12,14 @@
     {% for value in usersItems%}
     <li> {{ value["product_name"]}}: {{value["product_price"]}}  руб.
 
+        <form method="post" action="/hello/remove/">
+
+            <button name="remove" value="{{value["id_basket"]}}">Удалить</button>
+
+        </form>
+
+
+
     </li>
 
 

@@ -49,15 +49,42 @@ class Basket implements DbModelInterface
 
 
 
-        if (isset($_SESSION['id']) & ((int)$_GET['add'] > 0 )){
+        if (isset($_SESSION['id']) & ((int)$_POST['add'] > 0 )){
 
             $app = Application::instance();
             $dbName = $app->get("DB")["DB_NAME"];
-            $sql = 'SELECT products.product_price FROM products WHERE products.id = '.$_GET['add'];
+            $sql = 'SELECT products.product_price FROM products WHERE products.id = '.$_POST['add'];
             $price = $app->db()->getArrayBySqlQuery($sql);
-            $sql ="INSERT INTO `".$dbName."`.`basket` (`id_user`, `id_product`, `product_price`, `datetime_insert`) VALUES ( ".(int)$_SESSION['id'] ."," . (int)$_GET['add'] . ",".(int)$price[0]['product_price']." ,NOW())";
+            $sql ="INSERT INTO `".$dbName."`.`basket` (`id_user`, `id_product`, `product_price`, `datetime_insert`) VALUES ( ".(int)$_SESSION['id'] ."," . (int)$_POST['add'] . ",".(int)$price[0]['product_price']." ,NOW())";
             $app->db()->getArrayBySqlQuery($sql);
-            $_GET['add'] = 0;
+            $_POST['add'] = 0;
+
+        }
+
+    }
+
+
+
+    public function removeFromBasket(){
+
+
+
+        if (isset($_SESSION['id']) & ((int)$_POST['remove'] > 0 )){
+
+            var_dump($_SESSION['id']);
+            var_dump($_POST['remove']);
+
+
+            $app = Application::instance();
+            $dbName = $app->get("DB")["DB_NAME"];
+
+            $sql ="DELETE FROM `".$dbName."`.`basket` WHERE  `id`=".(int)$_POST['remove']." AND `id_user`=".(int)$_SESSION['id'];
+
+            var_dump($sql);
+            $app->db()->getArrayBySqlQuery($sql);
+            $_POST['remove'] = 0;
+
+
 
         }
 

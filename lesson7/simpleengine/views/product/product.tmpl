@@ -11,7 +11,9 @@
         <img src="{{valuePic}}" alt="{{valuePic}}">
         {%endfor%}
 
-        <a href="/hello/add/?add={{value2['id']}}">Добавить</a>
+        <form method="post" action="/hello/add/">
+            <button name="add" value="{{value2['id']}}">Добавить</button>
+        </form>
 
 
     </li>
