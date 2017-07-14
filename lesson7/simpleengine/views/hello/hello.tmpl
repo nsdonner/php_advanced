@@ -1,0 +1,30 @@
+
+{% if isAuth[1] == 0 %}
+
+Нужно авторизоваться. <a href="/user/login">Войти</a>
+
+
+{% else %}
+
+<p>Ваша корзина, {{user}}</p>
+<ul>
+
+    {% for value in usersItems%}
+    <li> {{ value["product_name"]}}: {{value["product_price"]}}  руб.
+
+    </li>
+
+
+    {%endfor%}
+</ul>
+
+
+<a href="/">На главную</a>
+
+
+
+
+
+{% endif %}
+
+

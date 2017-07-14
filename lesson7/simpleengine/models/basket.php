@@ -44,6 +44,26 @@ class Basket implements DbModelInterface
         }
     }
 
+
+    public function addToBasket(){
+
+
+
+        if (isset($_SESSION['id']) & ((int)$_GET['add'] > 0 )){
+
+            $app = Application::instance();
+            $dbName = $app->get("DB")["DB_NAME"];
+            $sql = 'SELECT products.product_price FROM products WHERE products.id = '.$_GET['add'];
+            $price = $app->db()->getArrayBySqlQuery($sql);
+            $sql ="INSERT INTO `".$dbName."`.`basket` (`id_user`, `id_product`, `product_price`, `datetime_insert`) VALUES ( ".(int)$_SESSION['id'] ."," . (int)$_GET['add'] . ",".(int)$price[0]['product_price']." ,NOW())";
+            $app->db()->getArrayBySqlQuery($sql);
+            $_GET['add'] = 0;
+
+        }
+
+    }
+
+
     public function save()
     {
         // TODO: Implement save() method.

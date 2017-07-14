@@ -28,7 +28,7 @@ class DefaultModel
         }*/
         if (isset($_SESSION['email'])) {
             $menuList = [   'Каталог' => '/product/index',
-                            'Кабинет' => '/hello/hello',
+                            'Кабинет' => '/hello',
                             'Выйти' => '/user/bye'
             ];
         } else $menuList = ['Войти' => '/user/login',

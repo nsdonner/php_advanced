@@ -16,14 +16,29 @@ class HelloController extends AbstractController
 
     public function actionIndex()
     {
-        $user = new User(1);
-        echo $user->getEmail();
-        $usersItems = $user->getUsersBasket();
-        echo "<p>Ваша корзина</p>";
-        echo "<ul>";
-        foreach($usersItems as $item){
-            echo "<li>".$item["product_name"].": ".$item["product_price"]." руб.</li>";
-        }
-        echo "</ul>";
+        $user = new User();
+        echo $this->render("/hello", [
+            "isAuth" => $user->userIsAuth(),
+            "user" => $user->getFirstname(),
+            "usersItems" => $user->getUsersBasket()
+
+        ]);
     }
+
+    public function actionAdd(){
+
+        $user = new User();
+        $basket = new \simpleengine\models\Basket();
+        $basket->addToBasket();
+
+
+        echo $this->render("/hello", [
+            "isAuth" => $user->userIsAuth(),
+            "user" => $user->getFirstname(),
+            "usersItems" => $user->getUsersBasket()
+
+        ]);
+
+    }
+
 }

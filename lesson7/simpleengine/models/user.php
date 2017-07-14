@@ -13,6 +13,14 @@ use simpleengine\core\Application;
 class User implements DbModelInterface
 {
     private $id;
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
     private $firstname;
     private $lastname;
     private $middlename;
@@ -20,6 +28,13 @@ class User implements DbModelInterface
 
     public function __construct($id = null)
     {
+
+        if (isset($_SESSION['id'])){
+            $id  = $_SESSION['id'];
+        }
+
+
+
         if ((int)$id > 0) {
             $this->find($id);
         }
@@ -39,7 +54,7 @@ class User implements DbModelInterface
     {
 
         /*session_start();*/
-        $username = 'Гость';
+        $username[0] = 'Гость';
 
         if (isset($_POST['email'])) {
             $app = Application::instance();
@@ -50,18 +65,21 @@ class User implements DbModelInterface
 
             if (isset($data[0]['id'])) {
                 $_SESSION['email'] = $_POST['email'];
-                $username = $data[0][firstname];
-                $_SESSION['username'] = $data[0][firstname];
+                $_SESSION['id'] = $data[0]['id'];
+                $username[0] = $data[0]['firstname'];
+                $_SESSION['username'] = $data[0]['firstname'];
             } else {
-                $username = 'хорошая попытка, но ты ввел не правильные данные.';
+                $username[0] = 'хорошая попытка, но ты ввел не правильные данные.';
+                $username[1] = 0;
             }
         }
 
         if (isset($_SESSION['username'])){
-            $username = $_SESSION['username'];
+            $username[0] = $_SESSION['username'];
+            $username[1] = 1;
         }
 
-        return "Привет, " . $username;
+        return $username;
 
     }
 
@@ -84,6 +102,11 @@ class User implements DbModelInterface
             $this->email = $result[0]["email"];
         }
     }
+
+
+
+
+
 
     public
     function getUsersBasket()

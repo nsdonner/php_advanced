@@ -7,6 +7,13 @@
 
         Название: {{value2['product_name']}}, цена: {{value2['product_price']}}, артикул: {{value2['product_sku']}}
 
+        {% for valuePic in value2['Photo'] %}
+        <img src="{{valuePic}}" alt="{{valuePic}}">
+        {%endfor%}
+
+        <a href="/hello/add/?add={{value2['id']}}">Добавить</a>
+
+
     </li>
     {%endfor%}
 

@@ -136,26 +136,41 @@ class Product implements DbModelInterface
         $app = Application::instance();
         $product['header'] = $this->catalog = $app->db()->getArrayBySqlQuery($sql);
 
-        $sql = 'SELECT products.product_name, products.product_price, products.product_sku FROM products 
+        /*$sql = 'SELECT products.product_name, products.product_price, products.product_sku FROM products
                 WHERE products.id_parent_product ='. (int)$id
-                ;
-        $product['list'] = $this->catalog = $app->db()->getArrayBySqlQuery($sql);
+                ;*/
 
 
+        $sql = 'SET @SQL = NULL';
+        $app->db()->getArrayBySqlQuery($sql);
+        $sql = 'SELECT
+                GROUP_CONCAT(DISTINCT
+                CONCAT(\'GROUP_CONCAT(IF(pr.product_property_name = \"\', pr.`product_property_name`, \'\", pp.property_value, NULL)) AS \', pr.`product_property_name`)
+                 ) INTO @SQL
+                FROM product_properties AS pr';
+        $app->db()->getArrayBySqlQuery($sql);
+        $sql='SET @SQL = CONCAT(\'SELECT p .*, \', @SQL, \'
+                   FROM products AS p
+                   LEFT JOIN product_properties_values AS pp ON (p.id = pp.id_product)
+                   LEFT JOIN product_properties AS pr ON (pr.id = pp.id_property)
+                   WHERE p.id_parent_product ='. (int)$id .'
+                   GROUP BY p.id ;\')';
+        $app->db()->getArrayBySqlQuery($sql);
+        $sql='PREPARE stmt FROM @SQL';
+        $app->db()->getArrayBySqlQuery($sql);
+        $sql='EXECUTE stmt';
+        $product['list']=$app->db()->getArrayBySqlQuery($sql);
+        $sql='DEALLOCATE PREPARE stmt';
+        $app->db()->getArrayBySqlQuery($sql);
 
-        /*foreach ($product as $key => $value) {
-            foreach ($images as $key1 => $value1) {
-                if ($images[$key1]['id_product'] == $catalog[$key]['id']) {
-                    $catalog[$key]['images'][] = $images[$key1]['property_value'];
-                }
-            }
-        }*/
+        foreach ($product['list'] as $key=>$good){
+            $product['list'][$key]['Photo'] = explode(',',$product['list'][$key]['Photo']);
+        }
+
 
 
         $this->product = $product;
-        echo '<pre>';
-        var_dump($product);
-        echo "</pre>";
+
 
         return $this->product;
     }
