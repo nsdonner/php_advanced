@@ -11,11 +11,10 @@
             <button name="remove" value="{{value['id_basket']}}">Удалить</button>
 
         </form>
-
-
-
     </li>
-
+    <form method="post" action="/order/order/">
+        <button name="order" value="order">Добавить в заказ</button>
+    </form>
 
     {%endfor%}
 </ul>

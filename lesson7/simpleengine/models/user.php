@@ -12,14 +12,16 @@ use simpleengine\core\Application;
 
 class User implements DbModelInterface
 {
-    private $id;
+    private $id=0;
 
     /**
      * @return mixed
      */
     public function getId()
     {
+        var_dump('Id пользователя '. $this->id);
         return $this->id;
+
     }
 
     private $firstname;

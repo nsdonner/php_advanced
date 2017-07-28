@@ -14,19 +14,23 @@
 
         <form method="post" action="/hello/remove/">
 
-            <button name="remove" value="{{value["id_basket"]}}">Удалить</button>
+            <button name="remove" value="{{value['id_basket']}}">Удалить</button>
 
         </form>
-
-
-
     </li>
 
-
     {%endfor%}
+
+
+    <form method="post" action="/order/order/">
+        <button name="order" value="order">Добавить в заказ</button>
+    </form>
+
 </ul>
 
 
+
+<a href="/order">Мои заказы</a>
 <a href="/">На главную</a>
 
 

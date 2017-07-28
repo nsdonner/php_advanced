@@ -1,10 +1,9 @@
-
 {% if isAuth[1] == 1 %}
 <h3>Корзина</h3>
 <ul>
 
     {% for value in usersItems%}
-    <li> {{ value["product_name"]}}: {{value["product_price"]}}  руб.
+    <li> {{ value["product_name"]}}: {{value["product_price"]}} руб.
 
         <form method="post" action="/hello/remove/">
 
@@ -13,18 +12,16 @@
         </form>
 
 
-
     </li>
+       {%endfor%}
 
-
-    {%endfor%}
+    <form method="post" action="/order/order/">
+        <button name="order" value="order">Добавить в заказ</button>
+    </form>
 </ul>
 
 
 {% endif %}
-
-
-
 
 
 <h1>Это наш новый сайт</h1>
@@ -34,8 +31,8 @@
 <p>Привет, {{username[0]}}</p>
 
 <ul>{% for key, value in menuList%}
-<li><a href='{{value}}'>{{key}}</a></li>
-{%endfor%}
+    <li><a href='{{value}}'>{{key}}</a></li>
+    {%endfor%}
 </ul>
 
 

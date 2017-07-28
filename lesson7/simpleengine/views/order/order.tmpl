@@ -1,0 +1,62 @@
+{% if isAuth[1] == 0 %}
+
+Нужно авторизоваться. <a href="/user/login">Войти</a>
+
+
+{% else %}
+
+
+<h2>Ваши заказы:</h2>
+
+<ul>
+
+    {% for value in userOrders%}
+    <li> Номер заказа {{ value["id"]}}, Сумма заказа: {{value["amount"]}}  руб. Дата создания заказа: {{value["datetime_create"]}},
+        Дата последнего редактирования заказа: {{value["datetime_update"]}}, Статус: {{value["status_name"]}}
+
+
+        {% if value["id_order_status"]  == 1 %}
+        <form method="post" action="/order/order/">
+            <button name="edit" value="{{value['id']}}">Просмотреть/редактировать/оформить</button>
+        </form>
+        <form method="post" action="/order/removeorder/">
+            <button name="remove" value="{{value['id']}}">Удалить</button>
+        </form>
+        {% endif %}
+        {% if value["id_order_status"]  == 2 %}
+        <form method="get" action="/order/find/">
+            <button name="order" value="{{value['id']}}">Просмотреть</button>
+        </form>
+        <form method="post" action="/order/pay/">
+            <button name="pay" value="{{value['id']}}">Оплатить</button>
+        </form>
+        <form method="post" action="/order/removeorder/">
+            <button name="remove" value="{{value['id']}}">Удалить</button>
+        </form>
+        {% endif %}
+
+        {% if value["id_order_status"]  > 2 %}
+        <form method="get" action="/order/find/">
+            <button name="order" value="{{value['id']}}">Просмотреть</button>
+        </form>
+
+        {% endif %}
+
+
+
+    </li>
+
+
+    {%endfor%}
+</ul>
+
+
+
+<a href="/">На главную</a>
+
+
+
+
+
+{% endif %}
+

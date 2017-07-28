@@ -1,0 +1,57 @@
+{% if isAuth[1] == 0 %}
+
+Нужно авторизоваться. <a href="/user/login">Войти</a>
+
+{% elseif order['empty'] == 1 %}
+
+<h2>Заказ удалён</h2>
+
+<a href="/">На главную</a>
+<a href="/order">Мои заказы</a>
+
+{% else %}
+
+
+<h2>Ваш текущий заказ:</h2>
+
+<ul>
+
+    {% for value in order%}
+    <li>
+        {{ value["product_name"]}}: {{value["product_price"]}} руб.
+
+        <form method="post" action="/order/removefromorder/">
+
+            <button name="removeFromOrder" value=" {{value['pId']}} ">Удалить</button>
+
+        </form>
+
+    </li>
+
+    {%endfor%}
+
+    <form method="post" action="/hello/save/">
+
+        <button name="save" value=" {{value['id_basket']}} ">Оформить заказ</button>
+
+    </form>
+
+
+    <form method="post" action="/hello/save/">
+
+        <button name="save" value=" {{value['id_basket']}} ">Удалить заказ</button>
+
+    </form>
+
+</ul>
+
+
+
+<a href="/">На главную</a>
+<a href="/order">Мои заказы</a>
+
+
+
+
+
+{% endif %}
