@@ -19,7 +19,7 @@ class User implements DbModelInterface
      */
     public function getId()
     {
-        var_dump('Id пользователя '. $this->id);
+
         return $this->id;
 
     }
