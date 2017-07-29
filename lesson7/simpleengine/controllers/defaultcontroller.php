@@ -16,9 +16,13 @@ class DefaultController extends AbstractController
 {
     public function actionIndex()
     {
+
+
         $model = new \simpleengine\models\DefaultModel();
         $user = new \simpleengine\models\User();
+
         echo $this->render("index", [
+
 
             "isAuth" => $user->userIsAuth(),
             "user" => $user->getFirstname(),
@@ -27,7 +31,9 @@ class DefaultController extends AbstractController
             "username" => $user->userIsAuth(),
             "menuList" => $model->menu(),
             "usersItems" => $user->getUsersBasket(),
+            "isAdmin" => $user->getRoles(),
 
         ]);
+       
     }
 }

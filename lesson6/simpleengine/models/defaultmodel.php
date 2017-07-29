@@ -48,14 +48,36 @@ class DefaultModel
 
             if ($data[0] > 0) {
                 $_SESSION['username'] = $_POST['login'];
+
+                $sql = "SELECT id FROM `users` WHERE login= '" . $login . "' AND password = '" . $password . "'";
+                $userId = $this->query($sql);
+
+                echo '<pre>';
+                var_dump($userId);
+                echo '</pre>';
+
+                $_SESSION['id'] = $userId[0][0];
+
             } else {
-                $username = 'хорошая попытка, но ты ввел не правильные данные.';
+                $username = 'хорошая попытка, но ты ввел не правильные данные!';
             }
 
         }
 
         if (isset($_SESSION['username'])) {
             $username = $_SESSION['username'];
+
+            $sql = "SELECT id FROM `users` WHERE login= '" . $login . "' AND password = '" . $password . "'";
+            $userId = $this->query($sql);
+
+            echo '<pre>';
+            var_dump($userId);
+            echo '</pre>';
+
+            $_SESSION['id'] = $userId[0][0];
+
+
+
         }
 
         return "Привет, " . $username;

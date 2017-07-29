@@ -1,0 +1,20 @@
+
+
+{% if isAuth[1] == 1 %}
+
+
+
+{% if isAdmin %}
+
+<p>Привет, {{firstName}} </p>
+
+{% else %}
+
+<p>Привет, {{firstName}}, я слежу за тобой.</p>
+
+{% endif %}
+
+{% else %}
+
+<p>Нужно авторизоваться. <a href="/user/login">Войти</a></p>
+{% endif %}

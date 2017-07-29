@@ -12,7 +12,7 @@ use simpleengine\core\Application;
 
 class User implements DbModelInterface
 {
-    private $id=0;
+    private $id = 0;
 
     /**
      * @return mixed
@@ -28,16 +28,22 @@ class User implements DbModelInterface
     private $lastname;
     private $middlename;
     private $email;
+    private $roles;
+
+    /**
+     * @return mixed
+     */
 
     public function __construct($id = null)
     {
 
         if (isset($_SESSION['id'])) {
-            $id = $this->id = (int)$_SESSION['id'];
+            $id = $this->id = (int)($_SESSION['id']);
+
         }
 
 
-        if ((int)$id > 0) {
+        if ((int)($id) > 0) {
             $this->find($id);
         }
     }
@@ -67,10 +73,18 @@ class User implements DbModelInterface
             $data = $app->db()->getArrayBySqlQuery($sql);
 
             if (isset($data[0]['id'])) {
+
+
+
+
                 $_SESSION['email'] = $_POST['email'];
                 $_SESSION['id'] = $data[0]['id'];
                 $username[0] = $data[0]['firstname'];
                 $_SESSION['username'] = $data[0]['firstname'];
+                $this->find($data[0]['id']);
+
+
+
             } else {
                 $username[0] = 'хорошая попытка, но ты ввел не правильные данные.';
                 $username[1] = 0;
@@ -80,6 +94,8 @@ class User implements DbModelInterface
         if (isset($_SESSION['username'])) {
             $username[0] = $_SESSION['username'];
             $username[1] = 1;
+           /* $_SESSION['id'] = $data[0]['id'];*/
+
         }
 
         return $username;
@@ -91,18 +107,24 @@ class User implements DbModelInterface
 
     }
 
+
     public function find($id)
     {
         $app = Application::instance();
         $sql = "SELECT * FROM users WHERE id = " . (int)$id;
         $result = $app->db()->getArrayBySqlQuery($sql);
 
+
+
         if (isset($result[0])) {
             $this->id = $result[0]["id"];
+            $this->roles = $result[0]["is_admin"];
             $this->firstname = $result[0]["firstname"];
             $this->lastname = $result[0]["lastname"];
             $this->middlename = $result[0]["middlename"];
             $this->email = $result[0]["email"];
+            $this->roles = $result[0]["is_admin"];
+
         }
     }
 
@@ -110,7 +132,7 @@ class User implements DbModelInterface
     public
     function getUsersBasket()
     {
-        if (isset($_SESSION['id'])){
+        if (isset($_SESSION['id'])) {
 
             $this->id = $_SESSION['id'];
             $basket = new Basket($this->id);
@@ -159,5 +181,10 @@ class User implements DbModelInterface
     function getEmail()
     {
         return $this->email;
+    }
+
+    public function getRoles()
+    {
+        return $this->roles;
     }
 }
