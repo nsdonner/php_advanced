@@ -122,4 +122,23 @@ class OrderController extends AbstractController
 
     }
 
+    public function actionSave()
+    {
+
+        $user = new User();
+        $order = new Order();
+        $result = $order->save((int)($user->getId()));
+
+        echo $this->render("/order", [
+            "isAuth" => $user->userIsAuth(),
+            "user" => $user->getFirstname(),
+            "userOrders" => $order->getOrders($user->getId())
+
+        ]);
+
+
+    }
+
+
+
 }

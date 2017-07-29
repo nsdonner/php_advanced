@@ -30,26 +30,21 @@
 
     {%endfor%}
 
-    <form method="post" action="/hello/save/">
-
-        <button name="save" value=" {{value['id_basket']}} ">Оформить заказ</button>
-
-    </form>
-
-
-    <form method="post" action="/order/removeorder/">
-        <button name="remove" value=" {{order[0]["id_order"]}} ">Удалить заказ</button>
-    </form>
-
 </ul>
+<form method="post" action="/order/save/">
 
+    <button name="save" value=' {{order[0]["id_order"]}} '>Оформить заказ</button>
+
+</form>
+
+
+<form method="post" action="/order/removeorder/">
+    <button name="remove" value=' {{order[0]["id_order"]}} '>Удалить заказ</button>
+</form>
 
 
 <a href="/">На главную</a>
 <a href="/order">Мои заказы</a>
-
-
-
 
 
 {% endif %}

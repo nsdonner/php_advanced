@@ -120,7 +120,7 @@ class User implements DbModelInterface
     }
 
     public
-    function save()
+    function save($userid)
     {
         // TODO: Implement save() method.
     }

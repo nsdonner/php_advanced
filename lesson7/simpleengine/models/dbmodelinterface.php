@@ -12,5 +12,5 @@ namespace simpleengine\models;
 interface DbModelInterface
 {
     public function find($id);
-    public function save();
+    public function save($userid);
 }

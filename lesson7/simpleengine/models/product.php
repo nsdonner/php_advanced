@@ -175,7 +175,7 @@ class Product implements DbModelInterface
         return $this->product;
     }
 
-    public function save()
+    public function save($userid)
     {
         // TODO: Implement save() method.
     }

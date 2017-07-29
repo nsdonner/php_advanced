@@ -24,7 +24,10 @@ class Order implements DbModelInterface
         $app = Application::instance();
 
 
-        if ($_POST['order'] = 'order') {
+
+
+
+        if ($_POST['order'] == 'order') {  // добавить в заказ
 
             $sql = 'SELECT id from orders where orders.id_order_status=1 AND orders.id_user=' . $userId;
             $result = $app->db()->getArrayBySqlQuery($sql);
@@ -36,13 +39,12 @@ class Order implements DbModelInterface
 
             var_dump('isEMPTY == ', (int)($isEmpty[0][0]));
 
-            if ((int)($isEmpty[0][0]) > 0) {
+            if ((int)($isEmpty[0][0]) > 0) {  // Если нового зазказа нет - создать и добавить текущую корзину в него
 
                 if (empty($result)) {
 
-
                     $sql = "INSERT INTO orders (`id_user`, `id_order_status`) VALUES (" . $userId . ",'1')";
-                    $result = $app->db()->getArrayBySqlQuery($sql);
+                    $app->db()->getArrayBySqlQuery($sql);
 
                     $sql = 'SELECT id from orders where orders.id_order_status=1 AND orders.id_user=' . $userId;
                     $result = $app->db()->getArrayBySqlQuery($sql);
@@ -50,29 +52,50 @@ class Order implements DbModelInterface
                     $sql = "UPDATE basket SET id_order= " . (int)($result[0]["id"]) . " WHERE  basket.id_user= " . $userId . " AND basket.id_order is NULL";
                     $app->db()->getArrayBySqlQuery($sql);
 
+                    $sql = "SELECT SUM(basket.product_price) FROM basket WHERE basket.id_order=". (int)($result[0]['id']);
+                    $sum=$app->db()->getArrayBySqlQuery($sql);
+
+                    $sql="UPDATE orders SET amount=".(int)($sum[0][0])." WHERE  id=".(int)($result[0]["id"]);
+                    $app->db()->getArrayBySqlQuery($sql);
 
 
-                } else {
+
+                } else { // Если новый заказ уже есть - просто добавить корзину в этот заказ
 
                     $sql = "UPDATE basket SET id_order= " . (int)($result[0]["id"]) . " WHERE  basket.id_user= " . $userId . " AND basket.id_order is NULL";
                     $app->db()->getArrayBySqlQuery($sql);
+
+                    $sql = "SELECT SUM(basket.product_price) FROM basket WHERE basket.id_order=". (int)($result[0]['id']);
+                    $sum=$app->db()->getArrayBySqlQuery($sql);
+
+
+                    $sql="UPDATE orders SET amount=".(int)($sum[0][0])." WHERE  id=".(int)($result[0]["id"]);
+                    $app->db()->getArrayBySqlQuery($sql);
+
+
 
                 }
             }
 
         }
 
-        $orderId = $_POST['edit'];
+        if (isset($_POST['edit'])){
+            $orderId = $_POST['edit'];
+        }
+        echo "<pre>";
+        var_dump('GET == ',$_GET['order']);
+        echo "</pre>";
+
+
         if (isset($_GET['order'])) {
-            $orderId = $_GET['order'];
+            $orderId = (int)($_GET['order']);
+
         }
         if ($orderId != NULL) {
 
             $_SESSION['orderId'] = $orderId;
 
-
         }
-
 
         echo "<pre>";
         var_dump($_SESSION['orderId']);
@@ -86,7 +109,6 @@ class Order implements DbModelInterface
         var_dump("EDIT ==", $_POST['edit']);
         var_dump("useid ==", $userId);
 
-
         $this->order = $app->db()->getArrayBySqlQuery("SELECT basket.product_price, basket.id AS pId ,basket.id_order, basket.datetime_insert, p.product_name from basket INNER JOIN products AS p ON basket.id_product = p.id
           where basket.id_user=" . (int)($userId) . " AND basket.id_order=" . (int)($_SESSION['orderId']));
 
@@ -95,7 +117,6 @@ class Order implements DbModelInterface
 
         $count = $app->db()->getArrayBySqlQuery($sql);
 
-
         if ($count[0][0] == 0) {
             $this->order["empty"] = 1;
             $app->db()->getArrayBySqlQuery("UPDATE orders SET `id_order_status`='5' WHERE  `id`=" . (int)($_SESSION['orderId']) . " AND `id_user`=" . $userId);
@@ -103,7 +124,8 @@ class Order implements DbModelInterface
 
         var_dump("this-order == ", $this->order);
 
-        $_SESSION['orderId']= NULL ;
+        /*$_SESSION['orderId']= NULL ;*/
+        /*$result = NULL;*/
         return $this->order;
     }
 
@@ -172,8 +194,23 @@ INNER JOIN order_statuses s ON orders.id_order_status = s.id where id_user = " .
         // TODO: Implement find() method.
     }
 
-    public function save()
+    public function save($userId)
     {
+
+        $app = Application::instance();
+
+
+        $order_id = $_POST["save"];
+
+        $app->db()->getArrayBySqlQuery("UPDATE orders SET `id_order_status`='2' WHERE  `id`=" . $order_id . " AND `id_user`=" . $userId);
+
+
+        return true;
+
+
+
+
+
         // TODO: Implement save() method.
     }
 
