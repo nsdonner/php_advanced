@@ -4,7 +4,7 @@
 
 {% elseif order['empty'] == 1 %}
 
-<h2>Заказ удалён</h2>
+<h2>Заказ пуст</h2>
 
 <a href="/">На главную</a>
 <a href="/order">Мои заказы</a>
@@ -37,10 +37,8 @@
     </form>
 
 
-    <form method="post" action="/hello/save/">
-
-        <button name="save" value=" {{value['id_basket']}} ">Удалить заказ</button>
-
+    <form method="post" action="/order/removeorder/">
+        <button name="remove" value=" {{order[0]["id_order"]}} ">Удалить заказ</button>
     </form>
 
 </ul>

@@ -22,12 +22,65 @@ class Order implements DbModelInterface
     public function getOrder($userId)
     {
         $app = Application::instance();
+
+
+        if ($_POST['order'] = 'order') {
+
+            $sql = 'SELECT id from orders where orders.id_order_status=1 AND orders.id_user=' . $userId;
+            $result = $app->db()->getArrayBySqlQuery($sql);
+            var_dump('RESULT == ', $result);
+            var_dump('EMPTY ==', empty($result));
+
+            $sql= "SELECT COUNT(*) FROM basket WHERE basket.id_user=". $userId ." AND basket.id_order is NULL";
+            $isEmpty = $app->db()->getArrayBySqlQuery($sql);
+
+            var_dump('isEMPTY == ', (int)($isEmpty[0][0]));
+
+            if ((int)($isEmpty[0][0]) > 0) {
+
+                if (empty($result)) {
+
+
+                    $sql = "INSERT INTO orders (`id_user`, `id_order_status`) VALUES (" . $userId . ",'1')";
+                    $result = $app->db()->getArrayBySqlQuery($sql);
+
+                    $sql = 'SELECT id from orders where orders.id_order_status=1 AND orders.id_user=' . $userId;
+                    $result = $app->db()->getArrayBySqlQuery($sql);
+
+                    $sql = "UPDATE basket SET id_order= " . (int)($result[0]["id"]) . " WHERE  basket.id_user= " . $userId . " AND basket.id_order is NULL";
+                    $app->db()->getArrayBySqlQuery($sql);
+
+
+
+                } else {
+
+                    $sql = "UPDATE basket SET id_order= " . (int)($result[0]["id"]) . " WHERE  basket.id_user= " . $userId . " AND basket.id_order is NULL";
+                    $app->db()->getArrayBySqlQuery($sql);
+
+                }
+            }
+
+        }
+
         $orderId = $_POST['edit'];
+        if (isset($_GET['order'])) {
+            $orderId = $_GET['order'];
+        }
         if ($orderId != NULL) {
 
             $_SESSION['orderId'] = $orderId;
 
+
         }
+
+
+        echo "<pre>";
+        var_dump($_SESSION['orderId']);
+        echo "</pre>";
+
+         if ((int)($result[0]["id"])>0){
+             $_SESSION['orderId'] = (int)($result[0]["id"]);
+         }
 
 
         var_dump("EDIT ==", $_POST['edit']);
@@ -50,7 +103,7 @@ class Order implements DbModelInterface
 
         var_dump("this-order == ", $this->order);
 
-
+        $_SESSION['orderId']= NULL ;
         return $this->order;
     }
 
