@@ -1,0 +1,123 @@
+{% if isAuth[1] == 1 %}
+
+
+{% if isAdmin %}
+
+<p>Привет, {{firstName}} </p>
+
+
+<h3>Управление заказами</h3>
+
+
+<p>Текущие заказы пользователей:</p>
+<ul>
+    {% for value in orders%}
+
+
+    {% if value['id_order_status'] < 3 %}
+    <li> Номер заказ:{{value['id']}}, Сумма заказа: {{value['amount']}}, Клиент: {{value['firstname']}}, Статус заказа: {{value['status_name']}}
+
+        <form method="GET" action="/order/admfind">
+            <button name="order" value="{{value['id']}}">Просмотреть</button>
+        </form>
+
+
+    </li>
+    {% endif %}
+
+    {% endfor %}
+</ul>
+
+
+<p>Оплаченные заказы:</p>
+
+<ul>
+
+    {% for value in orders%}
+
+
+    {% if (value['id_order_status'] == '3') %}
+    <li> Номер заказ:{{value['id']}}, Сумма заказа: {{value['amount']}}, Клиент: {{value['firstname']}}, Статус заказа: {{value['status_name']}}
+
+        <form method="GET" action="/order/admfind">
+            <button name="order" value="{{value['id']}}">Просмотреть</button>
+        </form>
+
+        <form method="POST" action="/admin/orders">
+            <button name="deliver" value="{{value['id']}}">Отгрузить</button>
+        </form>
+
+
+
+    </li>
+    {% endif %}
+
+    {% endfor %}
+</ul>
+
+
+
+<p>Отгруженные заказы:</p>
+
+<ul>
+
+    {% for value in orders%}
+
+
+    {% if (value['id_order_status'] == '4') %}
+    <li> Номер заказ:{{value['id']}}, Сумма заказа: {{value['amount']}}, Клиент: {{value['firstname']}}, Статус заказа: {{value['status_name']}}
+
+        <form method="GET" action="/order/admfind">
+            <button name="order" value="{{value['id']}}">Просмотреть</button>
+        </form>
+
+
+
+
+    </li>
+    {% endif %}
+
+    {% endfor %}
+</ul>
+
+
+
+<p>Удалённые заказы:</p>
+
+
+
+<ul>
+
+    {% for value in orders%}
+
+
+    {% if value['id_order_status'] == '5' %}
+    <li> Номер заказ:{{value['id']}}, Сумма заказа: {{value['amount']}}, Клиент: {{value['firstname']}}, Статус заказа: {{value['status_name']}}
+
+        <form method="GET" action="/order/admfind">
+            <button name="order" value="{{value['id']}}">Просмотреть</button>
+        </form>
+
+
+    </li>
+    {% endif %}
+
+    {% endfor %}
+</ul>
+
+
+<a href="/">На главную</a>
+<a href="/admin">Управление магазином</a>
+<a href="/user/bye">Выйти</a>
+
+
+{% else %}
+
+<p>Привет, {{firstName}}, я слежу за тобой.</p>
+
+{% endif %}
+
+{% else %}
+
+<p>Нужно авторизоваться. <a href="/user/login">Войти</a></p>
+{% endif %}

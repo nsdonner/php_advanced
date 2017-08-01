@@ -69,6 +69,23 @@ class OrderController extends AbstractController
 
     }
 
+    public function actionAdmFind()
+    {
+
+        $user = new User();
+        $order = new Order();
+
+        echo $this->render("/admfind", [
+            "isAuth" => $user->userIsAuth(),
+            "user" => $user->getFirstname(),
+            "order" => $order->getAdmOrder(),
+            "isAdmin" => $user->getRoles(),
+
+        ]);
+
+
+    }
+
     public function actionRemoveOrder()
     {
 

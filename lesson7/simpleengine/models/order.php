@@ -15,6 +15,57 @@ class Order implements DbModelInterface
 
     private $orders;
     private $order;
+    private $allOrders;
+    private $admOrder;
+
+    /**
+     * @return mixed
+     */
+    public function getAllOrders()
+    {
+
+
+        $user = new User();
+
+
+        if  ((int)($user->getRoles()) == 1){
+
+
+        $app = Application::instance();
+        $this->allOrders = $app->db()->getArrayBySqlQuery("select users.firstname,   orders.id, orders.amount, orders.datetime_create, orders.datetime_update, status_name, orders.id_order_status from orders 
+INNER JOIN order_statuses s ON orders.id_order_status = s.id INNER JOIN users ON orders.id_user = users.id");
+
+        var_dump('this-allORDERS == ', $this->allOrders);
+
+
+        return $this->allOrders;
+        }
+    }
+
+
+
+
+
+
+
+
+    public function getAdmOrder(){
+        $app = Application::instance();
+        $user = new User();
+
+        if ((int)($user->getRoles()) && isset($_GET['order'])){
+
+            $orderId = (int)($_GET['order']);
+            $sql = "SELECT basket.product_price, basket.id AS pId ,basket.id_order, basket.datetime_insert, p.product_name from basket INNER JOIN products AS p ON basket.id_product = p.id
+            where  basket.id_order=" . $orderId;
+            $this->admOrder = $app->db()->getArrayBySqlQuery($sql);
+
+            return $this->admOrder;
+
+        }
+
+    }
+
 
     /**
      * @return mixed
@@ -194,6 +245,27 @@ INNER JOIN order_statuses s ON orders.id_order_status = s.id where id_user = " .
         $order_id = $_POST["pay"];
 
         $app->db()->getArrayBySqlQuery("UPDATE orders SET `id_order_status`='3' WHERE  `id`=" . $order_id . " AND `id_user`=" . $userId);
+
+
+        return true;
+
+    }
+
+
+    public function deliverOrder()
+    {
+
+        $app = Application::instance();
+
+
+        if (isset($_POST["deliver"])){
+
+            $orderid = (int)($_POST["deliver"]);
+            $app->db()->getArrayBySqlQuery("UPDATE orders SET `id_order_status`='4' WHERE  `id`=" . $orderid );
+
+
+        }
+
 
 
         return true;

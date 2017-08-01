@@ -1,0 +1,29 @@
+{% if isAuth[1] == 0 %}
+
+Нужно авторизоваться. <a href="/user/login">Войти</a>
+
+
+{% elseif isAdmin %}
+
+
+<h2>Заказ № {{order[0]["id_order"]}} :</h2>
+
+<ul>
+
+    {% for value in order%}
+    <li>
+        {{ value["product_name"]}}: {{value["product_price"]}} руб.
+    </li>
+
+    {%endfor%}
+</ul>
+
+
+<a href="/">На главную</a>
+<a href="/admin/orders">Управление заказами</a>
+
+{% else %}
+
+<p>Кышь!</p>
+
+{% endif %}

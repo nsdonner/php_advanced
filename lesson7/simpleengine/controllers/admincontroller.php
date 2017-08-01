@@ -8,15 +8,18 @@
 
 namespace simpleengine\controllers;
 
-
-class adminController extends AbstractController{
-
-    function actionIndex(){
+use simpleengine\models\Order;
+use simpleengine\models\User;
 
 
+class adminController extends AbstractController
+{
 
-        $model = new \simpleengine\models\DefaultModel();
-        $user = new \simpleengine\models\User();
+    function actionIndex()
+    {
+
+
+        $user = new User();
 
         echo $this->render("index", [
 
@@ -28,10 +31,27 @@ class adminController extends AbstractController{
         ]);
 
 
-
-
     }
 
 
-}
+    function actionOrders()
+    {
 
+        $user = new User();
+        $order = new Order();
+        $order->deliverOrder();
+
+        echo $this->render("orders", [
+
+
+            "isAuth" => $user->userIsAuth(),
+            "isAdmin" => $user->getRoles(),
+            "firstName" => $user->getFirstname(),
+            "orders" => $order->getAllOrders(),
+
+
+        ]);
+
+    }
+
+}
