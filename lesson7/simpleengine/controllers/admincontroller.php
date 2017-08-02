@@ -9,6 +9,7 @@
 namespace simpleengine\controllers;
 
 use simpleengine\models\Order;
+use simpleengine\models\Product;
 use simpleengine\models\User;
 
 
@@ -51,6 +52,74 @@ class adminController extends AbstractController
 
 
         ]);
+
+    }
+
+
+    function actionProducts()
+    {
+
+        $user = new User();
+        $product = new Product();
+
+
+        echo $this->render("catalog", [
+
+
+            "isAuth" => $user->userIsAuth(),
+            "isAdmin" => $user->getRoles(),
+            "firstName" => $user->getFirstname(),
+            "catalog" => $product->getAllProducts(),
+            "deleted" => $product->getDeleted(),
+
+
+
+        ]);
+
+    }
+
+    function actionRmProduct(){
+
+        $user = new User();
+        $product = new Product();
+        $product->rmProduct();
+
+        echo $this->render("catalog", [
+
+
+            "isAuth" => $user->userIsAuth(),
+            "isAdmin" => $user->getRoles(),
+            "firstName" => $user->getFirstname(),
+            "catalog" => $product->getAllProducts(),
+            "deleted" => $product->getDeleted(),
+
+
+
+        ]);
+
+
+    }
+
+
+    function actionRmGroup(){
+
+        $user = new User();
+        $product = new Product();
+        $product->rmGroup();
+
+        echo $this->render("catalog", [
+
+
+            "isAuth" => $user->userIsAuth(),
+            "isAdmin" => $user->getRoles(),
+            "firstName" => $user->getFirstname(),
+            "catalog" => $product->getAllProducts(),
+            "deleted" => $product->getDeleted(),
+
+
+
+        ]);
+
 
     }
 

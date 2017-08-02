@@ -20,10 +20,109 @@ class Product implements DbModelInterface
     /**
      * @return array
      */
+
+    private $allProducts;
+    private $Deleted;
+
+    /**
+     * @return mixed
+     */
+    public function getDeleted()
+    {
+        $app = Application::instance();
+        $user = new User();
+
+        if ((int)($user->getRoles()) == 1){
+
+            $sql = "SELECT * FROM products WHERE deleted is NOT NULL";
+
+            $this->Deleted = $app->db()->getArrayBySqlQuery("$sql");
+
+
+        }
+
+
+        return $this->Deleted;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAllProducts()
+    {
+
+        $app = Application::instance();
+        $user = new User();
+
+
+
+        if ((int)($user->getRoles()) == 1){
+
+            $sql = "SELECT * FROM products";
+
+            $this->allProducts = $app->db()->getArrayBySqlQuery("$sql");
+
+            var_dump($this->allProducts);
+
+
+        }
+
+        return $this->allProducts;
+    }
+
     public function getProduct()
     {
         return $this->product;
     }
+
+
+    public function rmProduct(){
+
+        $app = Application::instance();
+        $user = new User();
+
+
+        if (isset($_POST['productId'])) {
+
+            $id = (int)($_POST['productId']);
+
+            if ((int)($user->getRoles()) == 1) {
+
+
+                $sql = "UPDATE products SET `deleted`= NOW() WHERE  `id`=" .$id ;
+                $app->db()->getArrayBySqlQuery("$sql");
+
+            }
+        }
+
+        return true;
+    }
+
+
+    public function rmGroup(){
+
+        $app = Application::instance();
+        $user = new User();
+
+
+        if (isset($_POST['groupId'])) {
+
+            $id = (int)($_POST['groupId']);
+
+            if ((int)($user->getRoles()) == 1) {
+
+                $sql = "UPDATE products SET `deleted`= NOW() WHERE  `id`=" .$id ." OR id_parent_product=".$id ;
+                $app->db()->getArrayBySqlQuery("$sql");
+
+            }
+        }
+
+        return true;
+    }
+
+
+
+
 
     private $catalog = [
         '1' => '1',
@@ -48,6 +147,7 @@ class Product implements DbModelInterface
      */
     public function getCatalog()
     {
+
         return $this->catalog;
     }
 
@@ -101,6 +201,7 @@ class Product implements DbModelInterface
                    LEFT JOIN product_properties_values AS pp ON (p.id = pp.id_product)
                    LEFT JOIN product_properties AS pr ON (pr.id = pp.id_property)
                    WHERE product_sku < 1000000
+                   AND deleted is NULL
                    GROUP BY p.id LIMIT 0, '. (int)$count . ';\')';
         $app->db()->getArrayBySqlQuery($sql);
         $sql='PREPARE stmt FROM @SQL';
@@ -154,6 +255,7 @@ class Product implements DbModelInterface
                    LEFT JOIN product_properties_values AS pp ON (p.id = pp.id_product)
                    LEFT JOIN product_properties AS pr ON (pr.id = pp.id_property)
                    WHERE p.id_parent_product ='. (int)$id .'
+                   AND deleted is NULL
                    GROUP BY p.id ;\')';
         $app->db()->getArrayBySqlQuery($sql);
         $sql='PREPARE stmt FROM @SQL';

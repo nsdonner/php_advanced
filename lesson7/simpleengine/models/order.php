@@ -256,9 +256,11 @@ INNER JOIN order_statuses s ON orders.id_order_status = s.id where id_user = " .
     {
 
         $app = Application::instance();
+        $user = new User();
 
 
-        if (isset($_POST["deliver"])){
+
+        if (isset($_POST["deliver"]) &&  (int)($user->getRoles()) == 1){
 
             $orderid = (int)($_POST["deliver"]);
             $app->db()->getArrayBySqlQuery("UPDATE orders SET `id_order_status`='4' WHERE  `id`=" . $orderid );
