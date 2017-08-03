@@ -4,6 +4,13 @@
 
 {% if isAdmin %}
 
+{% if status %}
+<p>Статус операции: {{status}}</p>
+
+
+{%endif%}
+
+
 <p>Привет, {{firstName}} </p>
 
 
@@ -61,15 +68,47 @@
 
 
 
-<h3>Добавить товар</h3>
+<h3>Добавление товарных групп</h3>
 
 <h4>Группа</h4>
 <form method="post" action="/admin/add">
-    <button name="addGroup">Добавить</button>
+
+    <input type="text" name="product_name" placeholder="Имя товара">
+    <input type="text" name="product_sku" placeholder="SKU like 100000">
+    <input type="number" name="product_price" placeholder="100">
+
+
+    <button name="addGroup" value="1">Добавить</button>
 </form>
 <h4>Товар группы</h4>
 <form method="post" action="/admin/add">
-    <button name="addProduct">Добавить</button>
+
+    <input type="text" name="product_name" placeholder="Имя товара">
+
+    <select name="id_parent_product" id="">
+
+        {% for value in categories %}
+
+        <option value=" {{value['id']}}  "> {{value['product_name']}} </option>
+
+        {% endfor %}
+
+
+
+
+
+    </select>
+    
+    
+    
+    <input type="text" name="product_sku" placeholder="SKU like 100000000">
+    <input type="number" name="product_price" placeholder="100">
+    <input type="text" name="size" placeholder="Размер">
+    <input type="text" name="color" placeholder="Цвет">
+    <input type="text" name="photo" placeholder="Картинка">
+
+
+    <button name="addProduct" value="1">Добавить</button>
 </form>
 
 

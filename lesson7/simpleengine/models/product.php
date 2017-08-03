@@ -23,6 +23,15 @@ class Product implements DbModelInterface
 
     private $allProducts;
     private $Deleted;
+    private $status;
+
+    /**
+     * @return mixed
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
 
     /**
      * @return mixed
@@ -32,7 +41,7 @@ class Product implements DbModelInterface
         $app = Application::instance();
         $user = new User();
 
-        if ((int)($user->getRoles()) == 1){
+        if ((int)($user->getRoles()) == 1) {
 
             $sql = "SELECT * FROM products WHERE deleted is NOT NULL";
 
@@ -55,15 +64,11 @@ class Product implements DbModelInterface
         $user = new User();
 
 
-
-        if ((int)($user->getRoles()) == 1){
+        if ((int)($user->getRoles()) == 1) {
 
             $sql = "SELECT * FROM products";
 
             $this->allProducts = $app->db()->getArrayBySqlQuery("$sql");
-
-            var_dump($this->allProducts);
-
 
         }
 
@@ -76,7 +81,8 @@ class Product implements DbModelInterface
     }
 
 
-    public function rmProduct(){
+    public function rmProduct()
+    {
 
         $app = Application::instance();
         $user = new User();
@@ -89,7 +95,7 @@ class Product implements DbModelInterface
             if ((int)($user->getRoles()) == 1) {
 
 
-                $sql = "UPDATE products SET `deleted`= NOW() WHERE  `id`=" .$id ;
+                $sql = "UPDATE products SET `deleted`= NOW() WHERE  `id`=" . $id;
                 $app->db()->getArrayBySqlQuery("$sql");
 
             }
@@ -99,7 +105,121 @@ class Product implements DbModelInterface
     }
 
 
-    public function rmGroup(){
+    public function add()
+    {
+
+        $app = Application::instance();
+        $user = new User();
+
+
+        if (isset($_POST['addGroup'])) {
+
+            $productName = $_POST['product_name'];
+            $productSku = $_POST['product_sku'];
+            $productPrice = $_POST['product_price'];
+
+            if ((int)($user->getRoles()) == 1) {
+
+                echo '<pre>';
+
+                echo '</pre>';
+
+                if (($productName == "") || ($productPrice == "") || ($productSku == "") || ($productSku > 999999) || ($productSku < 100000) || ($productPrice <= 0)) {
+
+                    $this->status = "Все поля - обязательные для заполнения, SKU должен быть уникальным, в заданом интревале, цена должна быть больше ноля.";
+
+                } else {
+
+
+                    $sql = "INSERT INTO products (product_name, product_sku, product_price) VALUES ('" . $productName . "', '" . $productSku . "', '" . $productPrice . "')";
+
+
+                    $result = $app->db()->getArrayBySqlQuery($sql);
+                    $this->catalogIndex(); //пересчет групп товаров
+
+                    if (isset($result['err'])) {
+
+                        $this->status = $result['err'];
+
+                    } else {
+
+                       $this->status = "OK";
+
+                    }
+
+                }
+            }
+        }
+
+
+        if (isset($_POST['addProduct'])) {
+
+
+            $productName = $_POST['product_name'];
+            $productSku = $_POST['product_sku'];
+            $productPrice = $_POST['product_price'];
+            $idParentProduct = $_POST['id_parent_product'];
+            $size = $_POST['size'];
+            $color = $_POST['color'];
+            $pic = $_POST['photo'];
+
+            if ((int)($user->getRoles()) == 1) {
+
+
+                if (($productName == "") || ($productPrice == "") || ($productSku == "") || ($productSku > 999999999) || ($productSku < 100000000) || ($productPrice <= 0) || ($idParentProduct <= 0) || ($idParentProduct == NULL)) {
+
+                    $this->status = "Поля Имя, Группа, SKU и Цена - обязательные для заполнения, SKU должен быть уникальным, в заданом интревале, цена должна быть больше ноля.";
+
+                } else {
+
+
+                    $sql = "INSERT INTO products (product_name, product_sku, product_price, id_parent_product ) VALUES ('" . $productName . "', '" . $productSku . "', '" . $productPrice . "', '" . $idParentProduct . "')";
+
+                    $result = $app->db()->getArrayBySqlQuery($sql);
+                    $this->catalogIndex(); //пересчет групп товаров
+
+                    if (isset($result['err'])) {
+
+                        $this->status = $result['err'];
+
+                    } else {
+
+
+
+
+                        $sql= "SELECT id FROM products WHERE product_sku='".$productSku."'";
+
+                        $productId = $app->db()->getArrayBySqlQuery($sql);
+
+
+                        $sql = "INSERT INTO product_properties_values (id_product, id_property, property_value) VALUES ('".$productId[0]['id']."','1','".$pic."'); 
+                                INSERT INTO product_properties_values (id_product, id_property, property_value) VALUES ('".$productId[0]['id']."','2','".$size."');
+                                INSERT INTO product_properties_values (id_product, id_property, property_value) VALUES ('".$productId[0]['id']."','3','".$color."');
+                        ";
+                        $result = $app->db()->getArrayBySqlQuery($sql);
+
+
+
+
+
+
+                        $this->status = "OK";
+
+
+                    }
+
+                }
+            }
+
+
+        }
+
+        return $this->status;
+    }
+
+
+    public function rmGroup()
+    {
 
         $app = Application::instance();
         $user = new User();
@@ -111,7 +231,7 @@ class Product implements DbModelInterface
 
             if ((int)($user->getRoles()) == 1) {
 
-                $sql = "UPDATE products SET `deleted`= NOW() WHERE  `id`=" .$id ." OR id_parent_product=".$id ;
+                $sql = "UPDATE products SET `deleted`= NOW() WHERE  `id`=" . $id . " OR id_parent_product=" . $id;
                 $app->db()->getArrayBySqlQuery("$sql");
 
             }
@@ -119,9 +239,6 @@ class Product implements DbModelInterface
 
         return true;
     }
-
-
-
 
 
     private $catalog = [
@@ -185,8 +302,6 @@ class Product implements DbModelInterface
         ";*/
 
 
-
-
         $app = Application::instance();
         $sql = 'SET @SQL = NULL';
         $app->db()->getArrayBySqlQuery($sql);
@@ -196,23 +311,23 @@ class Product implements DbModelInterface
                  ) INTO @SQL
                 FROM product_properties AS pr';
         $app->db()->getArrayBySqlQuery($sql);
-        $sql='SET @SQL = CONCAT(\'SELECT p .*, \', @SQL, \'
+        $sql = 'SET @SQL = CONCAT(\'SELECT p .*, \', @SQL, \'
                    FROM products AS p
                    LEFT JOIN product_properties_values AS pp ON (p.id = pp.id_product)
                    LEFT JOIN product_properties AS pr ON (pr.id = pp.id_property)
                    WHERE product_sku < 1000000
                    AND deleted is NULL
-                   GROUP BY p.id LIMIT 0, '. (int)$count . ';\')';
+                   GROUP BY p.id LIMIT 0, ' . (int)$count . ';\')';
         $app->db()->getArrayBySqlQuery($sql);
-        $sql='PREPARE stmt FROM @SQL';
+        $sql = 'PREPARE stmt FROM @SQL';
         $app->db()->getArrayBySqlQuery($sql);
-        $sql='EXECUTE stmt';
-        $catalog=$app->db()->getArrayBySqlQuery($sql);
-        $sql='DEALLOCATE PREPARE stmt';
+        $sql = 'EXECUTE stmt';
+        $catalog = $app->db()->getArrayBySqlQuery($sql);
+        $sql = 'DEALLOCATE PREPARE stmt';
         $app->db()->getArrayBySqlQuery($sql);
 
-        foreach ($catalog as $key=>$good){
-            $catalog[$key]['Photo'] = explode(',',$catalog[$key]['Photo']);
+        foreach ($catalog as $key => $good) {
+            $catalog[$key]['Photo'] = explode(',', $catalog[$key]['Photo']);
         }
         $this->catalog = $catalog;
         return $catalog;
@@ -222,16 +337,16 @@ class Product implements DbModelInterface
     public function find($id = 0)
     {
 
-       /* $sql = 'SELECT products.id , product_name, product_sku, id_property, product_properties.product_property_name , property_value, categories.category_name FROM `products`
-                LEFT JOIN product_properties_values ON products.id = product_properties_values.id_product
-                LEFT JOIN product_properties ON product_properties_values.id_property = product_properties.id
-                LEFT JOIN categories ON product_properties_values.property_value = categories.id
-                WHERE products.id = ' . (int)$id . ' OR id_parent_product = ' . (int)$id;*/
+        /* $sql = 'SELECT products.id , product_name, product_sku, id_property, product_properties.product_property_name , property_value, categories.category_name FROM `products`
+                 LEFT JOIN product_properties_values ON products.id = product_properties_values.id_product
+                 LEFT JOIN product_properties ON product_properties_values.id_property = product_properties.id
+                 LEFT JOIN categories ON product_properties_values.property_value = categories.id
+                 WHERE products.id = ' . (int)$id . ' OR id_parent_product = ' . (int)$id;*/
 
-       $sql = 'SELECT products.id , product_name, categories.category_name, product_sku FROM `products`
+        $sql = 'SELECT products.id , product_name, categories.category_name, product_sku FROM `products`
                     INNER JOIN product_properties_values on product_properties_values.id_product = products.id
                     INNER JOIN categories on categories.id = product_properties_values.property_value
-                    WHERE products.id = '. (int)$id  ;
+                    WHERE products.id = ' . (int)$id;
 
 
         $app = Application::instance();
@@ -250,25 +365,24 @@ class Product implements DbModelInterface
                  ) INTO @SQL
                 FROM product_properties AS pr';
         $app->db()->getArrayBySqlQuery($sql);
-        $sql='SET @SQL = CONCAT(\'SELECT p .*, \', @SQL, \'
+        $sql = 'SET @SQL = CONCAT(\'SELECT p .*, \', @SQL, \'
                    FROM products AS p
                    LEFT JOIN product_properties_values AS pp ON (p.id = pp.id_product)
                    LEFT JOIN product_properties AS pr ON (pr.id = pp.id_property)
-                   WHERE p.id_parent_product ='. (int)$id .'
+                   WHERE p.id_parent_product =' . (int)$id . '
                    AND deleted is NULL
                    GROUP BY p.id ;\')';
         $app->db()->getArrayBySqlQuery($sql);
-        $sql='PREPARE stmt FROM @SQL';
+        $sql = 'PREPARE stmt FROM @SQL';
         $app->db()->getArrayBySqlQuery($sql);
-        $sql='EXECUTE stmt';
-        $product['list']=$app->db()->getArrayBySqlQuery($sql);
-        $sql='DEALLOCATE PREPARE stmt';
+        $sql = 'EXECUTE stmt';
+        $product['list'] = $app->db()->getArrayBySqlQuery($sql);
+        $sql = 'DEALLOCATE PREPARE stmt';
         $app->db()->getArrayBySqlQuery($sql);
 
-        foreach ($product['list'] as $key=>$good){
-            $product['list'][$key]['Photo'] = explode(',',$product['list'][$key]['Photo']);
+        foreach ($product['list'] as $key => $good) {
+            $product['list'][$key]['Photo'] = explode(',', $product['list'][$key]['Photo']);
         }
-
 
 
         $this->product = $product;

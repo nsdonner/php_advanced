@@ -24,8 +24,9 @@ class Db
             $host = $app->get($connection_name)["DB_HOST"];
             $charset = $app->get($connection_name)["DB_CHARSET"];
             $dsn = 'mysql:dbname='.$name.';host='.$host.";charset=".$charset;
-
-            $this->pdo = new \PDO($dsn, $user, $pass);
+            $pdoAttributes = array();
+            $pdoAttributes[\PDO::ATTR_ERRMODE] = \PDO::ERRMODE_WARNING;
+            $this->pdo = new \PDO($dsn, $user, $pass, $pdoAttributes );
         }
         catch(\PDOException $e){
             echo "Can't connect to database";
@@ -33,8 +34,24 @@ class Db
     }
 
     public function getArrayBySqlQuery(string $sql){
-        $statement = $this->pdo->query($sql);
-        $result = $statement->fetchAll();
+
+
+        try {
+            $statement = $this->pdo->prepare($sql);
+            $statement->execute();
+            /*$statement = $this->pdo->query($sql); */
+            $result = $statement->fetchAll();
+            $err=$statement->errorInfo();
+            if ($err[2] != null) {
+                $result['err'] = $err[2];
+            }
+
+        } catch (\PDOException $e){
+
+            $result = $e;
+            echo $e;
+
+        }
 
         return $result;
     }

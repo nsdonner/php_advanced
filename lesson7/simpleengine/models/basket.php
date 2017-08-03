@@ -71,8 +71,6 @@ class Basket implements DbModelInterface
 
         if (isset($_SESSION['id']) & ((int)$_POST['remove'] > 0 )){
 
-            var_dump($_SESSION['id']);
-            var_dump($_POST['remove']);
 
 
             $app = Application::instance();
@@ -80,7 +78,7 @@ class Basket implements DbModelInterface
 
             $sql ="DELETE FROM `".$dbName."`.`basket` WHERE  `id`=".(int)$_POST['remove']." AND `id_user`=".(int)$_SESSION['id'];
 
-            var_dump($sql);
+
             $app->db()->getArrayBySqlQuery($sql);
             $_POST['remove'] = 0;
 

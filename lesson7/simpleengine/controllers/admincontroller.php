@@ -56,6 +56,31 @@ class adminController extends AbstractController
     }
 
 
+
+    function actionAdd(){
+
+
+
+        $product = new Product();
+        $product->add();
+        $user = new User();
+
+
+
+        echo $this->render("catalog", [
+
+            "isAuth" => $user->userIsAuth(),
+            "isAdmin" => $user->getRoles(),
+            "firstName" => $user->getFirstname(),
+            "deleted" => $product->getDeleted(),
+            "categories" => $product->getCatalog(),
+            "status" => $product->getStatus(),
+            "catalog" => $product->getAllProducts(),
+
+        ]);
+
+    }
+
     function actionProducts()
     {
 
@@ -71,7 +96,7 @@ class adminController extends AbstractController
             "firstName" => $user->getFirstname(),
             "catalog" => $product->getAllProducts(),
             "deleted" => $product->getDeleted(),
-
+            "categories" => $product->getCatalog(),
 
 
         ]);
@@ -92,7 +117,7 @@ class adminController extends AbstractController
             "firstName" => $user->getFirstname(),
             "catalog" => $product->getAllProducts(),
             "deleted" => $product->getDeleted(),
-
+            "categories" => $product->getCatalog(),
 
 
         ]);
@@ -115,7 +140,7 @@ class adminController extends AbstractController
             "firstName" => $user->getFirstname(),
             "catalog" => $product->getAllProducts(),
             "deleted" => $product->getDeleted(),
-
+            "categories" => $product->getCatalog(),
 
 
         ]);
