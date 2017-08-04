@@ -8,14 +8,13 @@
 
 namespace simpleengine\models;
 
-use \simpleengine\core\Application;
+
 
 class DefaultModel
 {
     public function testMethod()
     {
-        $app = Application::instance();
-        $app->db()->getArrayBySqlQuery("SELECT * FROM users");
+
 
         return "GeekUnivercity is awesome";
     }

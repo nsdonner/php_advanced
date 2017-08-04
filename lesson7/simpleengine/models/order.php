@@ -28,37 +28,32 @@ class Order implements DbModelInterface
         $user = new User();
 
 
-        if  ((int)($user->getRoles()) == 1){
+        if ((int)($user->getRoles()) == 1) {
 
 
-        $app = Application::instance();
-        $this->allOrders = $app->db()->getArrayBySqlQuery("select users.firstname,   orders.id, orders.amount, orders.datetime_create, orders.datetime_update, status_name, orders.id_order_status from orders 
-INNER JOIN order_statuses s ON orders.id_order_status = s.id INNER JOIN users ON orders.id_user = users.id");
+            $app = Application::instance();
+            $sql = "select users.firstname,   orders.id, orders.amount, orders.datetime_create, orders.datetime_update, status_name, orders.id_order_status from orders 
+INNER JOIN order_statuses s ON orders.id_order_status = s.id INNER JOIN users ON orders.id_user = users.id";
+            $this->allOrders = $app->db()->getArrayBySqlQuery($sql);
 
 
-
-
-        return $this->allOrders;
+            return $this->allOrders;
         }
     }
 
 
-
-
-
-
-
-
-    public function getAdmOrder(){
+    public function getAdmOrder()
+    {
         $app = Application::instance();
         $user = new User();
 
-        if ((int)($user->getRoles()) && isset($_GET['order'])){
+        if ((int)($user->getRoles()) && isset($_GET['order'])) {
 
             $orderId = (int)($_GET['order']);
             $sql = "SELECT basket.product_price, basket.id AS pId ,basket.id_order, basket.datetime_insert, p.product_name from basket INNER JOIN products AS p ON basket.id_product = p.id
-            where  basket.id_order=" . $orderId;
-            $this->admOrder = $app->db()->getArrayBySqlQuery($sql);
+            where  basket.id_order=?";
+            $sqlData = [$orderId];
+            $this->admOrder = $app->db()->getArrayBySqlQuery($sql, $sqlData);
 
             return $this->admOrder;
 
@@ -75,52 +70,55 @@ INNER JOIN order_statuses s ON orders.id_order_status = s.id INNER JOIN users ON
         $app = Application::instance();
 
 
-
-
-
         if ($_POST['order'] == 'order') {  // добавить в заказ
 
-            $sql = 'SELECT id from orders where orders.id_order_status=1 AND orders.id_user=' . $userId;
-            $result = $app->db()->getArrayBySqlQuery($sql);
+            $sql = 'SELECT id from orders where orders.id_order_status=1 AND orders.id_user=?';
+            $sqlData = [$userId];
+            $result = $app->db()->getArrayBySqlQuery($sql, $sqlData);
 
 
-            $sql= "SELECT COUNT(*) FROM basket WHERE basket.id_user=". $userId ." AND basket.id_order is NULL";
-            $isEmpty = $app->db()->getArrayBySqlQuery($sql);
-
+            $sql = "SELECT COUNT(*) FROM basket WHERE basket.id_user=? AND basket.id_order is NULL";
+            $isEmpty = $app->db()->getArrayBySqlQuery($sql, $sqlData);
 
 
             if ((int)($isEmpty[0][0]) > 0) {  // Если корзина пуста - идём дальше.
 
                 if (empty($result)) {  // Если нового зазказа нет - создать и добавить текущую корзину в него
 
-                    $sql = "INSERT INTO orders (`id_user`, `id_order_status`) VALUES (" . $userId . ",'1')";
-                    $app->db()->getArrayBySqlQuery($sql);
+                    $sql = "INSERT INTO orders (`id_user`, `id_order_status`) VALUES (?,'1')";
+                    $app->db()->getArrayBySqlQuery($sql, $sqlData);
 
-                    $sql = 'SELECT id from orders where orders.id_order_status=1 AND orders.id_user=' . $userId;
-                    $result = $app->db()->getArrayBySqlQuery($sql);
+                    $sql = 'SELECT id from orders where orders.id_order_status=1 AND orders.id_user=?';
+                    $result = $app->db()->getArrayBySqlQuery($sql, $sqlData);
 
-                    $sql = "UPDATE basket SET id_order= " . (int)($result[0]["id"]) . " WHERE  basket.id_user= " . $userId . " AND basket.id_order is NULL";
-                    $app->db()->getArrayBySqlQuery($sql);
+                    $sql = "UPDATE basket SET id_order= ? WHERE  basket.id_user= ? AND basket.id_order is NULL";
+                    $sqlData = [(int)$result[0]["id"], $userId];
+                    $app->db()->getArrayBySqlQuery($sql, $sqlData);
 
-                    $sql = "SELECT SUM(basket.product_price) FROM basket WHERE basket.id_order=". (int)($result[0]['id']);
-                    $sum=$app->db()->getArrayBySqlQuery($sql);
+                    $sql = "SELECT SUM(basket.product_price) FROM basket WHERE basket.id_order=?";
+                    $sqlData = [(int)($result[0]['id'])];
+                    $sum = $app->db()->getArrayBySqlQuery($sql, $sqlData);
 
-                    $sql="UPDATE orders SET amount=".(int)($sum[0][0])." WHERE  id=".(int)($result[0]["id"]);
-                    $app->db()->getArrayBySqlQuery($sql);
+                    $sql = "UPDATE orders SET amount=? WHERE  id=?";
+                    $sqlData = [(int)($sum[0][0]), (int)($result[0]["id"])];
+                    $app->db()->getArrayBySqlQuery($sql, $sqlData);
 
                     $_SESSION['orderId'] = (int)($result[0]["id"]);
 
 
                 } else { // Если новый заказ уже есть - просто добавить корзину в этот заказ
 
-                    $sql = "UPDATE basket SET id_order= " . (int)($result[0]["id"]) . " WHERE  basket.id_user= " . $userId . " AND basket.id_order is NULL";
-                    $app->db()->getArrayBySqlQuery($sql);
+                    $sql = "UPDATE basket SET id_order= ? WHERE  basket.id_user= ? AND basket.id_order is NULL";
+                    $sqlData = [(int)($result[0]["id"]), $userId];
+                    $app->db()->getArrayBySqlQuery($sql, $sqlData);
 
-                    $sql = "SELECT SUM(basket.product_price) FROM basket WHERE basket.id_order=". (int)($result[0]['id']);
-                    $sum=$app->db()->getArrayBySqlQuery($sql);
+                    $sql = "SELECT SUM(basket.product_price) FROM basket WHERE basket.id_order=?";
+                    $sqlData = [(int)($result[0]['id'])];
+                    $sum = $app->db()->getArrayBySqlQuery($sql, $sqlData);
 
-                    $sql="UPDATE orders SET amount=".(int)($sum[0][0])." WHERE  id=".(int)($result[0]["id"]);
-                    $app->db()->getArrayBySqlQuery($sql);
+                    $sql = "UPDATE orders SET amount=? WHERE  id=?";
+                    $sqlData = [(int)($sum[0][0]), (int)($result[0]["id"])];
+                    $app->db()->getArrayBySqlQuery($sql, $sqlData);
 
                     $_SESSION['orderId'] = (int)($result[0]["id"]);
 
@@ -130,10 +128,9 @@ INNER JOIN order_statuses s ON orders.id_order_status = s.id INNER JOIN users ON
             $_SESSION['orderId'] = (int)($result[0]["id"]);
         }
 
-        if (isset($_POST['edit'])){
+        if (isset($_POST['edit'])) {
             $_SESSION['orderId'] = $_POST['edit'];
         }
-
 
 
         if (isset($_GET['order'])) {
@@ -142,25 +139,26 @@ INNER JOIN order_statuses s ON orders.id_order_status = s.id INNER JOIN users ON
         }
 
 
+        if ((int)($result[0]["id"]) > 0) {
+            $_SESSION['orderId'] = (int)($result[0]["id"]);
+        }
 
 
-         if ((int)($result[0]["id"])>0){
-             $_SESSION['orderId'] = (int)($result[0]["id"]);
-         }
+        $sql = "SELECT basket.product_price, basket.id AS pId ,basket.id_order, basket.datetime_insert, p.product_name from basket INNER JOIN products AS p ON basket.id_product = p.id
+          where basket.id_user=? AND basket.id_order=?";
+        $sqlData = [(int)($userId), (int)($_SESSION['orderId'])];
+        $this->order = $app->db()->getArrayBySqlQuery($sql, $sqlData);
 
 
-
-        $this->order = $app->db()->getArrayBySqlQuery("SELECT basket.product_price, basket.id AS pId ,basket.id_order, basket.datetime_insert, p.product_name from basket INNER JOIN products AS p ON basket.id_product = p.id
-          where basket.id_user=" . (int)($userId) . " AND basket.id_order=" . (int)($_SESSION['orderId']));
-
-
-        $sql = 'SELECT COUNT(*) from basket where id_order =' . (int)($_SESSION['orderId']);
-
-        $count = $app->db()->getArrayBySqlQuery($sql);
+        $sql = 'SELECT COUNT(*) from basket where id_order =?';
+        $sqlData = [(int)($_SESSION['orderId'])];
+        $count = $app->db()->getArrayBySqlQuery($sql, $sqlData);
 
         if ($count[0][0] == 0) {
             $this->order["empty"] = 1;
-            $app->db()->getArrayBySqlQuery("UPDATE orders SET `id_order_status`='5' WHERE  `id`=" . (int)($_SESSION['orderId']) . " AND `id_user`=" . $userId);
+            $sql = "UPDATE orders SET `id_order_status`='5' WHERE  `id`=? AND `id_user`=?";
+            $sqlData = [(int)($_SESSION['orderId']), $userId];
+            $app->db()->getArrayBySqlQuery($sql, $sqlData);
         }
 
 
@@ -174,8 +172,12 @@ INNER JOIN order_statuses s ON orders.id_order_status = s.id INNER JOIN users ON
     {
 
         $app = Application::instance();
-        $this->orders = $app->db()->getArrayBySqlQuery("select orders.id, orders.amount, orders.datetime_create, orders.datetime_update, status_name, orders.id_order_status from orders 
-INNER JOIN order_statuses s ON orders.id_order_status = s.id where id_user = " . $userId . " AND orders.id_order_status != 5");
+
+        $sql="select orders.id, orders.amount, orders.datetime_create, orders.datetime_update, status_name, orders.id_order_status from orders 
+INNER JOIN order_statuses s ON orders.id_order_status = s.id where id_user = ? AND orders.id_order_status != 5";
+        $sqlData = [$userId];
+
+        $this->orders = $app->db()->getArrayBySqlQuery($sql,$sqlData);
 
 
         return $this->orders;
@@ -189,7 +191,10 @@ INNER JOIN order_statuses s ON orders.id_order_status = s.id where id_user = " .
 
         $order_id = $_POST["remove"];
 
-        $app->db()->getArrayBySqlQuery("UPDATE orders SET `id_order_status`='5' WHERE  `id`=" . $order_id . " AND `id_user`=" . $userId);
+
+        $sql="UPDATE orders SET `id_order_status`='5' WHERE  `id`=? AND `id_user`=?";
+        $sqlData = [$order_id,$userId];
+        $app->db()->getArrayBySqlQuery($sql,$sqlData);
 
 
         return true;
@@ -202,25 +207,26 @@ INNER JOIN order_statuses s ON orders.id_order_status = s.id where id_user = " .
 
         $app = Application::instance();
         $product_id = (int)($_POST["removeFromOrder"]);
-        $dbName = $app->get("DB")["DB_NAME"];
-        $sql = "DELETE FROM `" . $dbName . "`.`basket` WHERE  `id`=" . $product_id . " AND `id_user`=" . (int)$_SESSION['id'];
-        $app->db()->getArrayBySqlQuery($sql);
 
-        echo "<pre>";
 
-        echo "</pre>";
+        $sql = "DELETE FROM basket WHERE  `id`=? AND `id_user`=?";
+        $sqlData = [$product_id,(int)$_SESSION['id']];
+        $app->db()->getArrayBySqlQuery($sql,$sqlData);
 
 
 
         // Корректируем сумму заказа после удаления из него товара.
-        $sql = 'SELECT id from orders where orders.id_order_status=1 AND orders.id_user=' . $userId;
-        $resultRemove = $app->db()->getArrayBySqlQuery($sql);
+        $sql = 'SELECT id from orders where orders.id_order_status=1 AND orders.id_user=?';
+        $sqlData = [$userId];
+        $resultRemove = $app->db()->getArrayBySqlQuery($sql,$sqlData);
 
-        $sql = "SELECT SUM(basket.product_price) FROM basket WHERE basket.id_order=". (int)($resultRemove[0]['id']);
-        $sum=$app->db()->getArrayBySqlQuery($sql);
+        $sql = "SELECT SUM(basket.product_price) FROM basket WHERE basket.id_order=?";
+        $sqlData = [(int)($resultRemove[0]['id'])];
+        $sum = $app->db()->getArrayBySqlQuery($sql,$sqlData);
 
-        $sql="UPDATE orders SET amount=".(int)($sum[0][0])." WHERE  id=".(int)($resultRemove[0]['id']);
-        $app->db()->getArrayBySqlQuery($sql);
+        $sql = "UPDATE orders SET amount=? WHERE  id=?";
+        $sqlData = [(int)($sum[0][0]),(int)($resultRemove[0]['id'])];
+        $app->db()->getArrayBySqlQuery($sql,$sqlData);
 
         return true;
 
@@ -234,7 +240,10 @@ INNER JOIN order_statuses s ON orders.id_order_status = s.id where id_user = " .
 
         $order_id = $_POST["pay"];
 
-        $app->db()->getArrayBySqlQuery("UPDATE orders SET `id_order_status`='3' WHERE  `id`=" . $order_id . " AND `id_user`=" . $userId);
+
+        $sql="UPDATE orders SET `id_order_status`='3' WHERE  `id`=? AND `id_user`=?";
+        $sqlData = [$order_id,$userId];
+        $app->db()->getArrayBySqlQuery($sql, $sqlData);
 
 
         return true;
@@ -249,15 +258,16 @@ INNER JOIN order_statuses s ON orders.id_order_status = s.id where id_user = " .
         $user = new User();
 
 
+        if (isset($_POST["deliver"]) && (int)($user->getRoles()) == 1) {
 
-        if (isset($_POST["deliver"]) &&  (int)($user->getRoles()) == 1){
+            $orderId = (int)($_POST["deliver"]);
 
-            $orderid = (int)($_POST["deliver"]);
-            $app->db()->getArrayBySqlQuery("UPDATE orders SET `id_order_status`='4' WHERE  `id`=" . $orderid );
+            $sql = "UPDATE orders SET `id_order_status`='4' WHERE  `id`=?";
+            $sqlData = [$orderId];
+            $app->db()->getArrayBySqlQuery($sql,$sqlData);
 
 
         }
-
 
 
         return true;
@@ -278,13 +288,13 @@ INNER JOIN order_statuses s ON orders.id_order_status = s.id where id_user = " .
 
         $order_id = $_POST["save"];
 
-        $app->db()->getArrayBySqlQuery("UPDATE orders SET `id_order_status`='2' WHERE  `id`=" . $order_id . " AND `id_user`=" . $userId);
+        $sql = "UPDATE orders SET `id_order_status`='2' WHERE  `id`=? AND `id_user`=?";
+        $sqlData = [$order_id,$userId];
+
+        $app->db()->getArrayBySqlQuery($sql,$sqlData);
 
 
         return true;
-
-
-
 
 
         // TODO: Implement save() method.

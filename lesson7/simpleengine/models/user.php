@@ -69,8 +69,10 @@ class User implements DbModelInterface
             $app = Application::instance();
             $email = $_POST['email'];
             $password = $_POST['pass'];
-            $sql = "SELECT * FROM users WHERE email= '" . $email . "' AND hash_pass = MD5('" . $password . "')";
-            $data = $app->db()->getArrayBySqlQuery($sql);
+            $sql = "SELECT * FROM users WHERE email=? AND hash_pass = MD5(?)";
+            $sqlData = [$email,$password];
+
+            $data = $app->db()->getArrayBySqlQuery($sql,$sqlData);
 
             if (isset($data[0]['id'])) {
 
@@ -86,7 +88,7 @@ class User implements DbModelInterface
 
 
             } else {
-                $username[0] = 'хорошая попытка, но ты ввел не правильные данные.';
+                $username[0] = 'Хорошая попытка, но ты ввел неправильные данные.';
                 $username[1] = 0;
             }
         }
@@ -111,8 +113,9 @@ class User implements DbModelInterface
     public function find($id)
     {
         $app = Application::instance();
-        $sql = "SELECT * FROM users WHERE id = " . (int)$id;
-        $result = $app->db()->getArrayBySqlQuery($sql);
+        $sql = "SELECT * FROM users WHERE id =?";
+        $sqlData = [(int)$id];
+        $result = $app->db()->getArrayBySqlQuery($sql,$sqlData);
 
 
 

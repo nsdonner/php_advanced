@@ -28,9 +28,10 @@ class Basket implements DbModelInterface
         $sql = "SELECT b.*, p.product_name
                 FROM basket b
                 LEFT JOIN products p ON p.id = b.id_product
-                WHERE b.id_user = ".(int)$id_user."
+                WHERE b.id_user = ?
                 AND b.id_order IS NULL";
-        $result = $app->db()->getArrayBySqlQuery($sql);
+        $sqlData = [(int)$id_user];
+        $result = $app->db()->getArrayBySqlQuery($sql,$sqlData);
 
         if(!empty($result)){
             foreach($result as $item){
@@ -52,11 +53,13 @@ class Basket implements DbModelInterface
         if (isset($_SESSION['id']) & ((int)$_POST['add'] > 0 )){
 
             $app = Application::instance();
-            $dbName = $app->get("DB")["DB_NAME"];
-            $sql = 'SELECT products.product_price FROM products WHERE products.id = '.$_POST['add'];
-            $price = $app->db()->getArrayBySqlQuery($sql);
-            $sql ="INSERT INTO `".$dbName."`.`basket` (`id_user`, `id_product`, `product_price`, `datetime_insert`) VALUES ( ".(int)$_SESSION['id'] ."," . (int)$_POST['add'] . ",".(int)$price[0]['product_price']." ,NOW())";
-            $app->db()->getArrayBySqlQuery($sql);
+
+            $sql = 'SELECT products.product_price FROM products WHERE products.id = ?';
+            $sqlData=[(int)$_POST['add']];
+            $price = $app->db()->getArrayBySqlQuery($sql,$sqlData);
+            $sql ="INSERT INTO basket (`id_user`, `id_product`, `product_price`, `datetime_insert`) VALUES ( ?,?,?,NOW())";
+            $sqlData=[(int)$_SESSION['id'],(int)$_POST['add'],(int)$price[0]['product_price']];
+            $app->db()->getArrayBySqlQuery($sql,$sqlData);
             $_POST['add'] = 0;
 
         }
@@ -74,12 +77,12 @@ class Basket implements DbModelInterface
 
 
             $app = Application::instance();
-            $dbName = $app->get("DB")["DB_NAME"];
-
-            $sql ="DELETE FROM `".$dbName."`.`basket` WHERE  `id`=".(int)$_POST['remove']." AND `id_user`=".(int)$_SESSION['id'];
 
 
-            $app->db()->getArrayBySqlQuery($sql);
+            $sql ="DELETE FROM basket WHERE  `id`=? AND `id_user`=?";
+
+            $sqlData=[(int)$_POST['remove'],(int)$_SESSION['id']];
+            $app->db()->getArrayBySqlQuery($sql,$sqlData);
             $_POST['remove'] = 0;
 
 

@@ -95,8 +95,9 @@ class Product implements DbModelInterface
             if ((int)($user->getRoles()) == 1) {
 
 
-                $sql = "UPDATE products SET `deleted`= NOW() WHERE  `id`=" . $id;
-                $app->db()->getArrayBySqlQuery("$sql");
+                $sql = "UPDATE products SET `deleted`= NOW() WHERE  `id`=?";
+                $sqlData = [$id];
+                $app->db()->getArrayBySqlQuery($sql, $sqlData);
 
             }
         }
@@ -131,10 +132,10 @@ class Product implements DbModelInterface
                 } else {
 
 
-                    $sql = "INSERT INTO products (product_name, product_sku, product_price) VALUES ('" . $productName . "', '" . $productSku . "', '" . $productPrice . "')";
+                    $sql = "INSERT INTO products (product_name, product_sku, product_price) VALUES (?, ?, ?)";
+                    $sqlData = [$productName, $productSku, $productPrice];
 
-
-                    $result = $app->db()->getArrayBySqlQuery($sql);
+                    $result = $app->db()->getArrayBySqlQuery($sql, $sqlData);
                     $this->catalogIndex(); //пересчет групп товаров
 
                     if (isset($result['err'])) {
@@ -143,7 +144,7 @@ class Product implements DbModelInterface
 
                     } else {
 
-                       $this->status = "OK";
+                        $this->status = "OK";
 
                     }
 
@@ -173,9 +174,9 @@ class Product implements DbModelInterface
                 } else {
 
 
-                    $sql = "INSERT INTO products (product_name, product_sku, product_price, id_parent_product ) VALUES ('" . $productName . "', '" . $productSku . "', '" . $productPrice . "', '" . $idParentProduct . "')";
-
-                    $result = $app->db()->getArrayBySqlQuery($sql);
+                    $sql = "INSERT INTO products (product_name, product_sku, product_price, id_parent_product ) VALUES (?, ?, ?, ?)";
+                    $sqlData = [$productName, $productSku, $productPrice, $idParentProduct];
+                    $result = $app->db()->getArrayBySqlQuery($sql, $sqlData);
                     $this->catalogIndex(); //пересчет групп товаров
 
                     if (isset($result['err'])) {
@@ -185,22 +186,18 @@ class Product implements DbModelInterface
                     } else {
 
 
+                        $sql = "SELECT id FROM products WHERE product_sku=?";
+                        $sqlDat = [$productSku];
+                        $productId = $app->db()->getArrayBySqlQuery($sql, $sqlData);
 
 
-                        $sql= "SELECT id FROM products WHERE product_sku='".$productSku."'";
-
-                        $productId = $app->db()->getArrayBySqlQuery($sql);
-
-
-                        $sql = "INSERT INTO product_properties_values (id_product, id_property, property_value) VALUES ('".$productId[0]['id']."','1','".$pic."'); 
-                                INSERT INTO product_properties_values (id_product, id_property, property_value) VALUES ('".$productId[0]['id']."','2','".$size."');
-                                INSERT INTO product_properties_values (id_product, id_property, property_value) VALUES ('".$productId[0]['id']."','3','".$color."');
+                        $sql = "INSERT INTO product_properties_values (id_product, id_property, property_value) VALUES (?,'1',?); 
+                                INSERT INTO product_properties_values (id_product, id_property, property_value) VALUES (?,'2',?);
+                                INSERT INTO product_properties_values (id_product, id_property, property_value) VALUES (?,'3',?);
                         ";
-                        $result = $app->db()->getArrayBySqlQuery($sql);
 
-
-
-
+                        $sqlData = [$productId[0]['id'],$pic,$productId[0]['id'],$size,$productId[0]['id'],$color];
+                        $app->db()->getArrayBySqlQuery($sql,$sqlData);
 
 
                         $this->status = "OK";
@@ -231,8 +228,9 @@ class Product implements DbModelInterface
 
             if ((int)($user->getRoles()) == 1) {
 
-                $sql = "UPDATE products SET `deleted`= NOW() WHERE  `id`=" . $id . " OR id_parent_product=" . $id;
-                $app->db()->getArrayBySqlQuery("$sql");
+                $sql = "UPDATE products SET `deleted`= NOW() WHERE  `id`=? OR id_parent_product=?";
+                $sqlData = [$id,$id];
+                $app->db()->getArrayBySqlQuery($sql,$sqlData);
 
             }
         }
@@ -318,6 +316,7 @@ class Product implements DbModelInterface
                    WHERE product_sku < 1000000
                    AND deleted is NULL
                    GROUP BY p.id LIMIT 0, ' . (int)$count . ';\')';
+
         $app->db()->getArrayBySqlQuery($sql);
         $sql = 'PREPARE stmt FROM @SQL';
         $app->db()->getArrayBySqlQuery($sql);
@@ -346,11 +345,11 @@ class Product implements DbModelInterface
         $sql = 'SELECT products.id , product_name, categories.category_name, product_sku FROM `products`
                     INNER JOIN product_properties_values on product_properties_values.id_product = products.id
                     INNER JOIN categories on categories.id = product_properties_values.property_value
-                    WHERE products.id = ' . (int)$id;
+                    WHERE products.id = ?';
 
-
+        $sqlData = [(int)$id];
         $app = Application::instance();
-        $product['header'] = $this->catalog = $app->db()->getArrayBySqlQuery($sql);
+        $product['header'] = $this->catalog = $app->db()->getArrayBySqlQuery($sql,$sqlData);
 
         /*$sql = 'SELECT products.product_name, products.product_price, products.product_sku FROM products
                 WHERE products.id_parent_product ='. (int)$id

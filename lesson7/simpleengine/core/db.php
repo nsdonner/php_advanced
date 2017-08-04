@@ -33,16 +33,28 @@ class Db
         }
     }
 
-    public function getArrayBySqlQuery(string $sql){
+    public function getArrayBySqlQuery(string $sql, array $data=[]){
 
 
         try {
             $statement = $this->pdo->prepare($sql);
-            $statement->execute();
+            $statement->execute($data);
             /*$statement = $this->pdo->query($sql); */
             $result = $statement->fetchAll();
             $err=$statement->errorInfo();
+
             if ($err[2] != null) {
+
+
+                echo '<pre>';
+                var_dump('PREPARE = ',$statement->queryString);
+                echo '</pre>';
+
+                echo '<pre>';
+                var_dump($err[2]);
+                echo '</pre>';
+
+
                 $result['err'] = $err[2];
             }
 
